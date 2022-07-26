@@ -1,14 +1,11 @@
-from _curses import meta
-
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, func, BLOB, MetaData, Table, String
 from sqlalchemy.dialects.oracle import VARCHAR2, NUMBER
 from sqlalchemy.orm import as_declarative, declared_attr, declarative_base
 
 # 1 -------------------
-
+# from database import engine
 # Base = declarative_base()
-
-
+# Base.metadata.create_all(engine)
 # 2 ---------------------
 from database import engine
 
@@ -156,6 +153,7 @@ class OrderItem(BaseUtil):
     item_price = Column(NUMBER(22, 2))
     paid_price = Column(NUMBER(22, 2))
     shipping_fee = Column(NUMBER(22, 2))
+
 
 
 metadata_obj = Base.metadata
