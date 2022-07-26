@@ -155,6 +155,7 @@ class OrderItem(BaseUtil):
     shipping_fee = Column(NUMBER(22, 2))
 
 
+
 metadata_obj = Base.metadata
 metadata_obj.bind = engine
 metadata_obj.create_all()
