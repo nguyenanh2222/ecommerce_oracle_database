@@ -12,9 +12,3 @@ engine = create_engine(f"oracle+cx_oracle://{username}:{password}@{host}:{port}/
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 session = sessionmaker(bind=engine, future=True)
-
-rs = engine.execute("""
-SELECT table_name
-FROM all_tables
-ORDER BY table_name ASC""").all()
-print(rs)
