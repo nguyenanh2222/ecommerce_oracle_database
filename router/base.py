@@ -12,7 +12,7 @@ router = APIRouter()
 @router.post(path="/user",
              response_model=DataResponse,
              status_code=status.HTTP_200_OK)
-def insert_user_router(user: UserReq):
+def insert_user(user: UserReq):
     user = UserService().insert_user_service(UserReq(created_at=user.created_at,
                                                      created_by=user.created_by,
                                                      updated_at=user.updated_at,
