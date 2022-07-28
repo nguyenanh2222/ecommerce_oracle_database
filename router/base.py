@@ -2,7 +2,8 @@ from fastapi import APIRouter
 from starlette import status
 
 from project.schemas import DataResponse
-from schema import UserReq, UserRes
+from repo.product import ProductRepo
+from schema import UserReq, UserRes, ProductReq, SkuReq, ProductRes
 from service.base import UserService
 
 router = APIRouter()
@@ -21,6 +22,7 @@ def insert_user_router(user: UserReq):
                                                      firstname=user.firstname,
                                                      lastname=user.lastname))
     return DataResponse(data=user)
+
 
 # @router.put(path="/user")
 # def update_user_router(username: str, user: UserReq):
@@ -44,3 +46,8 @@ def insert_user_router(user: UserReq):
 # @router.get(path="/{username}")
 # def delete_user_router(username: str):
 #     ...
+
+
+
+
+

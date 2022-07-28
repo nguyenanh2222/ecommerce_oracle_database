@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, ForeignKey, DateTime, func, BLOB, MetaDa
 from sqlalchemy.dialects.oracle import VARCHAR2, NUMBER
 from sqlalchemy.orm import as_declarative, declared_attr, declarative_base
 
+
 from database import engine
 
 
@@ -100,7 +101,7 @@ class Product(BaseUtil):
     id = Column(Integer, primary_key=True)
     name = Column(VARCHAR2(200))
     description = Column(VARCHAR2(4000))
-    branch = Column(VARCHAR2(200))
+    brand = Column(VARCHAR2(200))
     category_id = Column(Integer, ForeignKey("category.id"))
 
 
@@ -118,6 +119,7 @@ class Sku(BaseUtil):
     package_weight = Column(Integer)
     price = Column(NUMBER(22, 2))
     product_id = Column(Integer, ForeignKey("product.id"))
+    size_product = Column(VARCHAR2(10))
 
 
 class Order(BaseUtil):

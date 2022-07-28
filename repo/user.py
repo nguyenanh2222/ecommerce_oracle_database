@@ -9,7 +9,7 @@ from schema import UserReq
 
 
 class UserRepo:
-    def insert_user_repo(self, user: UserReq):
+    def insert_user_repo(self, user: UserReq) -> Row:
         session: Session = SessionLocal()
         session.add(User(created_at=user.created_at,
                          created_by=user.created_by,
@@ -24,9 +24,9 @@ class UserRepo:
         user = session.get(User, user.username)
         return user
 
-    def update_user_repo(self, username: str, user: UserReq) -> Row:
+    def update_product_repo(self, username: str, user: UserReq) -> Row:
         session: Session = SessionLocal()
-        query = update(User).where(username == username).values(created_at=user.created_at,
+        query = update(User).where(username == id).values(created_at=user.created_at,
                                                                 created_by=user.created_by,
                                                                 update_at=user.updated_at,
                                                                 update_by=user.updated_by,

@@ -1,6 +1,9 @@
 from datetime import datetime
+
+from model import Product, Sku
+from repo.product import ProductRepo
 from repo.user import UserRepo
-from schema import UserReq
+from schema import UserReq, SkuReq, ProductReq
 
 
 class UserService(UserRepo):
@@ -29,3 +32,5 @@ class UserService(UserRepo):
 
     def delete_user_repo(self, username: str):
         ...
+
+
