@@ -9,6 +9,7 @@ class UserService(UserRepo):
                                                    created_by=user.created_by,
                                                    updated_at=user.updated_at,
                                                    updated_by=user.updated_by,
+                                                   username=user.username,
                                                    password=user.password,
                                                    firstname=user.firstname,
                                                    lastname=user.lastname))

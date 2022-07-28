@@ -1,20 +1,26 @@
 from fastapi import APIRouter
+from starlette import status
+
+from project.schemas import DataResponse
 from schema import UserReq, UserRes
 from service.base import UserService
 
 router = APIRouter()
 
 
-@router.post(path="/user")
+@router.post(path="/user",
+             response_model=DataResponse,
+             status_code=status.HTTP_200_OK)
 def insert_user_router(user: UserReq):
     user = UserService().insert_user_service(UserReq(created_at=user.created_at,
                                                      created_by=user.created_by,
                                                      updated_at=user.updated_at,
                                                      updated_by=user.updated_by,
+                                                     username=user.username,
                                                      password=user.password,
                                                      firstname=user.firstname,
                                                      lastname=user.lastname))
-    return user
+    return DataResponse(data=user)
 
 # @router.put(path="/user")
 # def update_user_router(username: str, user: UserReq):

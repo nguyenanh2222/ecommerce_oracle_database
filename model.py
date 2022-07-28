@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, func, BLOB, MetaData, Table, String
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, func, BLOB, MetaData, Table, String, inspect
 from sqlalchemy.dialects.oracle import VARCHAR2, NUMBER
 from sqlalchemy.orm import as_declarative, declared_attr, declarative_base
-
 
 from database import engine
 
@@ -24,13 +23,13 @@ class Base:
 class BaseUtil(Base):
     __abstract__ = True
 
-    created_at = Column("CREATED_AT", DateTime, server_default=func.now())
+    created_at = Column("created_at", DateTime, server_default=func.now())
 
-    created_by = Column("CREATED_BY", VARCHAR2(20), default=None)
+    created_by = Column("created_by", VARCHAR2(20), default=None)
 
-    updated_at = Column("UPDATED_AT", DateTime, server_default=func.now())
+    updated_at = Column("updated_at", DateTime, server_default=func.now())
 
-    updated_by = Column("UPDATED_BY", VARCHAR2(20), default=None)
+    updated_by = Column("updated_by", VARCHAR2(20), default=None)
 
 
 class Permission(Base):
@@ -151,6 +150,8 @@ class OrderItem(BaseUtil):
     shipping_fee = Column(NUMBER(22, 2))
 
 
+# insp = inspect(engine)
+# print(insp.get_table_names())
 
 metadata_obj = Base.metadata
 metadata_obj.bind = engine

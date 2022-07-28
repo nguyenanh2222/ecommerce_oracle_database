@@ -1,27 +1,28 @@
 from typing import List
 from sqlalchemy import insert, update, select, delete
-from sqlalchemy.engine import Row
+from sqlalchemy.engine import Row, CursorResult
 from sqlalchemy.orm import Session
 from datetime import date
-from base import User, UserRole, RolePermission, Permission, Role
+from model import User, UserRole, RolePermission, Permission, Role
 from database import SessionLocal
 from schema import UserReq
 
 
 class UserRepo:
-    def insert_user_repo(self, user: UserReq) -> Row:
+    def insert_user_repo(self, user: UserReq):
         session: Session = SessionLocal()
-        stmt = insert(User).values(created_at=user.created_at,
-                                   created_by=user.created_by,
-                                   updated_at=user.updated_at,
-                                   updated_by=user.updated_by,
-                                   password=user.password,
-                                   firstname=user.firstname,
-                                   lastname=user.lastname
-                                   )
-        rs = session.execute(stmt).fetchone()
+        session.add(User(created_at=user.created_at,
+                         created_by=user.created_by,
+                         updated_at=user.updated_at,
+                         updated_by=user.updated_by,
+                         username=user.username,
+                         password=user.password,
+                         firstname=user.firstname,
+                         lastname=user.lastname
+                         ))
         session.commit()
-        return rs
+        user = session.get(User, user.username)
+        return user
 
     def update_user_repo(self, username: str, user: UserReq) -> Row:
         session: Session = SessionLocal()
@@ -32,7 +33,7 @@ class UserRepo:
                                                                 password=user.password,
                                                                 first_name=user.password,
                                                                 last_name=user.lastname).returning(User)
-        rs = session.execute(query).fetchone()
+        rs = session.execute(query).fetchall()
         session.commit()
         return rs
 

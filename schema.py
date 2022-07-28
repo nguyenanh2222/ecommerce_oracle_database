@@ -13,59 +13,93 @@ class BaseUtil(BaseModel):
 
     updated_by: str = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class PermissionReq(BaseModel):
     code: str = Field(...)
     name: str = Field(...)
+
+    class Config:
+        orm_mode = True
 
 
 class PermissionRes(BaseModel):
     code: str = Field(None)
     name: str = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class RolePermissionReq(BaseModel):
     permission_code: str = Field(...)
     role_code: str = Field(...)
+
+    class Config:
+        orm_mode = True
 
 
 class RolePermissionRes(BaseModel):
     permission_code: str = Field(None)
     role_code: str = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class RoleReq(BaseModel):
     code: str = Field(...)
     name: str = Field(...)
+
+    class Config:
+        orm_mode = True
 
 
 class RoleRes(BaseModel):
     code: str = Field(None)
     name: str = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class UserRoleReq(BaseModel):
     username: str = Field(...)
     role_code: str = Field(...)
+
+    class Config:
+        orm_mode = True
 
 
 class UserRoleRes(BaseModel):
     username: str = Field(None)
     role_code: str = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class UserReq(BaseUtil):
-    username: str = Field(None, autoincrement=True, nullable=True)
+    username: str = Field(..., autoincrement=True, nullable=True)
     password: str = Field(...)
     firstname: str = Field(...)
     lastname: str = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class UserRes(BaseUtil):
-    username: str = Field(None)
+    username: str = Field(None,  autoincrement=True, nullable=True)
     password: str = Field(None)
     firstname: str = Field(None)
     lastname: str = Field(None)
+
+    class Config:
+        orm_mode = True
+
 
 
 class CustomerReq(BaseUtil):
@@ -79,6 +113,9 @@ class CustomerReq(BaseUtil):
     district_code: str = Field(...)
     ward_code: str = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class CustomerRes(BaseUtil):
     username: str = Field(None)
@@ -91,6 +128,9 @@ class CustomerRes(BaseUtil):
     district_code: str = Field(None)
     ward_code: str = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class CarItemReq(BaseUtil):
     id: int = Field(...)
@@ -99,6 +139,9 @@ class CarItemReq(BaseUtil):
     name: str = Field(...)
     main_image: str = Field(...)
     item_price: Decimal = Field(...)
+
+    class Config:
+        orm_mode = True
 
 
 class CarItemRes(BaseUtil):
@@ -109,15 +152,24 @@ class CarItemRes(BaseUtil):
     main_image: str = Field(None)
     item_price: Decimal = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class CategoryReq(BaseModel):
     id: int = Field(...)
     name: str = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class CategoryRes(BaseModel):
     id: int = Field(None)
     name: str = Field(None)
+
+    class Config:
+        orm_mode = True
 
 
 class ProductReq(BaseUtil):
@@ -127,6 +179,9 @@ class ProductReq(BaseUtil):
     branch: str = Field(...)
     category_id: int = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class ProductRes(BaseUtil):
     id: int = Field(None)
@@ -134,6 +189,9 @@ class ProductRes(BaseUtil):
     description: str = Field(None)
     branch: str = Field(None)
     category_id: int = Field(None)
+
+    class Config:
+        orm_mode = True
 
 
 class SkuReq(BaseUtil):
@@ -150,6 +208,9 @@ class SkuReq(BaseUtil):
     price: Decimal = Field(...)
     product_id: int = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class SkuRes(BaseUtil):
     id: int = Field(None)
@@ -164,6 +225,9 @@ class SkuRes(BaseUtil):
     package_weight: int = Field(None)
     price: Decimal = Field(None)
     product_id: int = Field(None)
+
+    class Config:
+        orm_mode = True
 
 
 class OrderReq(BaseUtil):
@@ -182,6 +246,9 @@ class OrderReq(BaseUtil):
     ward_code_shipping: str = Field(...)
     customer_username: str = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class OrderRes(BaseUtil):
     id: int = Field(None)
@@ -199,6 +266,9 @@ class OrderRes(BaseUtil):
     ward_code_shipping: str = Field(None)
     customer_username: str = Field(None)
 
+    class Config:
+        orm_mode = True
+
 
 class OrderItemReq(BaseUtil):
     id: int = Field(...)
@@ -210,6 +280,9 @@ class OrderItemReq(BaseUtil):
     paid_price: Decimal = Field(...)
     shipping_fee: Decimal = Field(...)
 
+    class Config:
+        orm_mode = True
+
 
 class OrderItemRes(BaseUtil):
     id: int = Field(None)
@@ -220,3 +293,6 @@ class OrderItemRes(BaseUtil):
     item_price: Decimal = Field(None)
     paid_price: Decimal = Field(None)
     shipping_fee: Decimal = Field(None)
+
+    class Config:
+        orm_mode = True
