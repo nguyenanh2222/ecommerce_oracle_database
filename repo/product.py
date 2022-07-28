@@ -1,4 +1,7 @@
-from sqlalchemy import insert
+
+from typing import List
+
+from sqlalchemy import insert, select, update, DateTime
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
 from database import SessionLocal
@@ -9,90 +12,87 @@ from schema import ProductReq, SkuReq
 class ProductRepo:
     def insert_product_repo(self, product: ProductReq):
         session: Session = SessionLocal()
-        # stmt = insert(Product).values(created_at=product.created_at,
-        #                               created_by=product.created_by,
-        #                               updated_at=product.updated_at,
-        #                               updated_by=product.updated_by,
-        #                               name=product.name,
-        #                               description=product.description,
-        #                               brand=product.brand,
-        #                               category_id=product.category_id
-        #                               )
-        # session.execute(stmt)
-        # stmt = insert(Sku).values(created_at=product.created_at,
-        #                           created_by=product.created_by,
-        #                           updated_at=product.updated_at,
-        #                           updated_by=product.updated_by,
-        #                           quantity=product.quantity,
-        #                           images=product.images,
-        #                           color=product.color,
-        #                           price=product.price,
-        #                           size_product=product.size_product)
-        p = Product(
+        stmt = insert(Product).values(created_at=product.created_at,
+                                      created_by=product.created_by,
+                                      updated_at=product.updated_at,
+                                      updated_by=product.updated_by,
+                                      name=product.name,
+                                      description=product.description,
+                                      brand=product.brand,
+                                      category_id=product.category_id
+                                      )
+        session.execute(stmt)
+        stmt = insert(Sku).values(created_at=product.created_at,
+                                  created_by=product.created_by,
+                                  updated_at=product.updated_at,
+                                  updated_by=product.updated_by,
+                                  quantity=product.quantity,
+                                  images=product.images,
+                                  color=product.color,
+                                  price=product.price,
+                                  size_product=product.size_product)
+        session.execute(stmt)
+        session.commit()
+        return product
+
+    def update_product_repo(self, product_id: int, product: ProductReq) -> Row:
+        session: Session = SessionLocal()
+        stmt = update(Product).where(Product.id == product_id).values(created_at=product.created_at,
+                                                                      created_by=product.created_by,
+                                                                      updated_at=product.updated_at,
+                                                                      updated_by=product.updated_by,
+                                                                      name=product.name,
+                                                                      description=product.description,
+                                                                      brand=product.brand,
+                                                                      category_id=product.category_id)
+        stmt = update(Sku).where(Sku.id == product_id).values(
             created_at=product.created_at,
             created_by=product.created_by,
             updated_at=product.updated_at,
             updated_by=product.updated_by,
-            name=product.name,
-            description=product.description,
-            brand=product.brand,
-            category_id=product.category_id
-        )
-        # session.execute(stmt)
-        session.add(p)
+            quantity=product.quantity,
+            images=product.images,
+            color=product.color,
+            price=product.price,
+            size_product=product.size_product)
+        session.execute(stmt)
         session.commit()
-        # return product
 
-    def update_product_repo(self, id: int, product: ProductReq) -> Row:
-        # Ma SKU khong thay doi
-        # them update price, quantity, status, images, seller_sku, color
-        # size bao gom width, height, length, weight
+    def get_products_repo(self, created_at: DateTime, created_by: str,
+                          updated_at: DateTime, updated_by: str,
+                          name: str, category: str,
+                          color: str, price: int,
+                          brand: str,
+                          page: int, size: int) -> List[Row]:
         session: Session = SessionLocal()
-        session.query(Product).filter(Product.id == id).update(ProductReq(created_at=product.created_at,
-                                                                          created_by=product.created_by,
-                                                                          updated_at=product.updated_at,
-                                                                          updated_by=product.updated_by,
-                                                                          name=product.name,
-                                                                          description=product.description,
-                                                                          brand=product.brand,
-                                                                          category_id=product.category_id))
-        session.commit()
-        product = session.get(product, product.id)
-        return product
+        query = select(Product).join(Sku, Sku.product_id)
+        if created_at:
+            query += query.where(Product.created_at == created_at)
+        if updated_at:
+            query += query.where(Product.updated_at == updated_at)
+        if created_by:
+            query += query.where(Product.c.created_by.like(f"%{created_by}%"))
+        if updated_by:
+            query += query.where(Product.c.update_by.like(f"%{created_by}%"))
+        if name:
+            query += query.where(Product.c.name.like(f"%{name}%"))
+        if category:
+            query += query.where(Product.c.catrpory.like(f"%{name}%"))
+        if name:
+            query += query.where(Product.c.name.like(f"%{name}%"))
+        if color:
+            query += query.where(Product.c.color.like(f"%{name}%"))
+        if price:
+            query += query.where(Product.c.price == price)
+        if brand:
+            query += query.where(Product.c.brand.like(f"%{name}%"))
+        if page and size:
+            query += query.limit(size).offset((page - 1) * size)
+        rs = session.execute(query).fetchall()
+        return rs
 
-    # def get_products_repo(self, created_at: date, created_by: str,
-    #                       updated_at: date, updated_by: str,
-    #                       name: str, category: str,
-    #
-    #                       page: int, size: int) -> List[Row]:
-    #     session: Session = SessionLocal()
-    #     query = select(productRole).join(product, product.productname)
-    #     if created_at:
-    #         query += query.where(product.created_at == created_at)
-    #     if updated_at:
-    #         query += query.where(product.updated_at == updated_at)
-    #     if created_by:
-    #         query += query.where(product.created_by == created_by)
-    #     if updated_by:
-    #         query += query.where(product.updated_by == updated_by)
-    #     if first_name:
-    #         query += query.where(product.firstname == first_name)
-    #     if last_name:
-    #         query += query.where(product.lastname == last_name)
-    #     if page and size:
-    #         query += query.limit(size).offset((page - 1) * size)
-    #     rs = session.execute(query).fetchall()
-    #     return rs
-    #
-    # def get_permission_repo(self, permission_name: str, role_name: str):
-    #     session: Session = SessionLocal()
-    #     query = select(RolePermission).join(Permission, Permission.code).join(Role, Role.code)
-    #     if permission_name:
-    #         query += query.where(Permission.name == permission_name)
-    #     if role_name:
-    #         query += query.where(Role.name == role_name)
-    #     rs = session.execute(query).fetchall()
-    #     return rs
+
+
     #
     # def delete_product_repo(self, productname: str):
     #     session: Session = SessionLocal()
