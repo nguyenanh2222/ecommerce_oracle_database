@@ -43,6 +43,7 @@ class OrderService(OrderRepo):
                                              customer_username=customer_username,
                                              sort_direction=sort_direction,
                                              page=page, size=size)
+
         total_page = len(orders) / size
         current_page = page
         total_item = len(orders)
