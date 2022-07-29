@@ -5,7 +5,7 @@ from decimal import Decimal
 from fastapi import HTTPException
 from starlette import status
 
-from project.schemas import DataResponse
+from project.schemas import DataResponse, Sort
 from repo.product import ProductRepo
 from schema import ProductReq
 
@@ -55,7 +55,8 @@ class ProductService(ProductRepo):
                              name: str, category: str,
                              color: str, from_price: Decimal, to_price: Decimal,
                              brand: str,
-                             page: int, size: int) -> DataResponse:
+                             page: int, size: int,
+                             sort_direction: Sort.Direction,) -> DataResponse:
         products = ProductRepo().get_products_repo(created_at=created_at,
                                                    created_by=created_by,
                                                    updated_at=updated_at,
@@ -67,7 +68,8 @@ class ProductService(ProductRepo):
                                                    page=page,
                                                    size=size,
                                                    from_price=from_price,
-                                                   to_price=to_price)
+                                                   to_price=to_price,
+                                                   sort_direction=sort_direction)
         total_page = math.ceil(len(products) / size)
         total_items = len(products)
         current_page = page

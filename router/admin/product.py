@@ -1,10 +1,9 @@
-
 from datetime import datetime
 from decimal import Decimal
 
 from starlette import status
 from fastapi import APIRouter, Query
-from project.schemas import DataResponse
+from project.schemas import DataResponse, Sort
 from schema import ProductRes, ProductReq
 from service.admin.product import ProductService
 
@@ -65,20 +64,20 @@ def update_product(product: ProductReq, product_id: int):
     status_code=status.HTTP_200_OK
 )
 def get_products(created_at: datetime = Query(datetime.strptime("2021-11-29", "%Y-%m-%d"),
-                                                      description="Create at"),
-                         created_by: str = Query(None, description="Create by"),
-                         updated_at: datetime = Query(datetime.strptime("2021-11-29", "%Y-%m-%d"),
-                                                      description="Update at"),
-                         updated_by: str = Query(None, description="Update by"),
-                         name: str = Query(None, description="Name"),
-                         category: str = Query(None, description="Category"),
-                         color: str = Query(None, description="Color"),
-                         from_price: Decimal = Query(None, description="Price"),
-                         to_price: Decimal = Query(None, description="Price"),
-                         brand: str = Query(None, description="Brand"),
-                         page: int = Query(1, description="Page"),
-                         size: int = Query(10, description="Size in a page"),
-                         ) -> DataResponse:
+                                              description="Create at"),
+                 created_by: str = Query(None, description="Create by"),
+                 updated_at: datetime = Query(datetime.strptime("2021-11-29", "%Y-%m-%d"),
+                                              description="Update at"),
+                 updated_by: str = Query(None, description="Update by"),
+                 name: str = Query(None, description="Name"),
+                 category: str = Query(None, description="Category"),
+                 color: str = Query(None, description="Color"),
+                 from_price: Decimal = Query(None, description="Price"),
+                 to_price: Decimal = Query(None, description="Price"),
+                 brand: str = Query(None, description="Brand"),
+                 page: int = Query(1, description="Page"),
+                 size: int = Query(10, description="Size in a page"),
+                 sort_direction: Sort.Direction = Query(None)) -> DataResponse:
     products = ProductService().get_products_service(created_at=created_at,
                                                      created_by=created_by,
                                                      updated_at=updated_at,
@@ -90,8 +89,11 @@ def get_products(created_at: datetime = Query(datetime.strptime("2021-11-29", "%
                                                      page=page,
                                                      size=size,
                                                      from_price=from_price,
-                                                     to_price=to_price)
+                                                     to_price=to_price,
+                                                     sort_direction=sort_direction)
     return DataResponse(data=products)
+
+
 @router.get(
     path="/all/products",
     response_model=DataResponse,
@@ -100,6 +102,8 @@ def get_products(created_at: datetime = Query(datetime.strptime("2021-11-29", "%
 def get_all_products() -> DataResponse:
     products = ProductService().get_all_products()
     return DataResponse(data=products)
+
+
 @router.get(
     path="/product",
     response_model=DataResponse,
@@ -108,6 +112,7 @@ def get_all_products() -> DataResponse:
 def get_product_id(product_id: int) -> DataResponse:
     product = ProductService().get_product_id(product_id=product_id)
     return DataResponse(data=product)
+
 
 @router.delete(
     path="/product",

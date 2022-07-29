@@ -4,6 +4,8 @@ from decimal import Decimal
 from pydantic import BaseModel, Field
 from pydantic.datetime_parse import date
 
+from status import EOrderStatus
+
 
 class BaseUtil(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
@@ -180,12 +182,12 @@ class SkuRes(BaseUtil):
 
 
 class OrderReq(BaseUtil):
-    id: int = Field(...)
+    # id: int = Field(...)
     customer_name: str = Field(...)
     price: Decimal = Field(...)
-    shipping_fee_original: Decimal = Field(...)
+    # shipping_fee_original: Decimal = Field(...)
     payment_method: str = Field(...)
-    shipping_fee_discount: Decimal = Field(...)
+    # shipping_fee_discount: Decimal = Field(...)
     items_count: int = Field(...)
     name_shipping: str = Field(...)
     phone_shipping: str = Field(...)
@@ -194,6 +196,7 @@ class OrderReq(BaseUtil):
     district_code_shipping: str = Field(...)
     ward_code_shipping: str = Field(...)
     customer_username: str = Field(...)
+    status: str = Field(...)
 
 
 class OrderRes(BaseUtil):

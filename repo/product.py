@@ -6,6 +6,7 @@ from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from model import Product, Sku
+from project.schemas import Sort
 from schema import ProductReq, SkuReq
 
 
@@ -67,7 +68,8 @@ class ProductRepo:
                           color: str,
                           from_price: Decimal, to_price: Decimal,
                           brand: str,
-                          page: int, size: int) -> List[Row]:
+                          page: int, size: int,
+                          sort_direction: Sort.Direction) -> List[Row]:
         session: Session = SessionLocal()
         query = session.query(Product)
         if created_at:
@@ -92,6 +94,10 @@ class ProductRepo:
             query = query.filter(Product.price == to_price)
         if brand:
             query = query.filter(Product.brand.like(f"%{name}%"))
+        if sort_direction == 'asc':
+            query = query.order_by(Product.created_time)
+        if sort_direction == 'desc':
+            query = query.order_by(Product.created_time).desc()
         if page and size:
             query = query.limit(size).offset((page - 1) * size)
         rs = session.execute(query).fetchall()

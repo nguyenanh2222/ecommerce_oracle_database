@@ -138,6 +138,7 @@ class Order(BaseUtil):
     district_code_shipping = Column(VARCHAR2(50))
     ward_code_shipping = Column(VARCHAR2(50))
     customer_username = Column(VARCHAR2(100), ForeignKey("customer.username"))
+    status = Column(VARCHAR2(20))
 
 
 class OrderItem(BaseUtil):
