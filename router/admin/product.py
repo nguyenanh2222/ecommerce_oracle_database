@@ -3,6 +3,8 @@ from decimal import Decimal
 
 from starlette import status
 from fastapi import APIRouter, Query
+from starlette.responses import FileResponse
+
 from project.schemas import DataResponse, Sort
 from schema import ProductRes, ProductReq
 from service.admin.product import ProductService
@@ -120,3 +122,11 @@ def get_product_id(product_id: int) -> DataResponse:
 )
 def delete_product(product_id: int):
     product = ProductService().delete_product_service(product_id=product_id)
+
+
+@router.get(
+    path="/files/{name}"
+)
+async def get_file(name: str):
+    return FileResponse(f"files/{name}")
+

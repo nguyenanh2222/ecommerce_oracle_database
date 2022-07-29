@@ -106,6 +106,7 @@ class Product(BaseUtil):
 
 class Sku(BaseUtil):
     __tablename__ = "sku"
+
     id = Column(Integer, primary_key=True)
     status = Column(VARCHAR2(100))
     quantity = Column(Integer)
@@ -150,8 +151,3 @@ class OrderItem(BaseUtil):
     item_price = Column(NUMBER(22, 2))
     paid_price = Column(NUMBER(22, 2))
     shipping_fee = Column(NUMBER(22, 2))
-
-
-metadata_obj = Base.metadata
-metadata_obj.bind = engine
-metadata_obj.create_all()

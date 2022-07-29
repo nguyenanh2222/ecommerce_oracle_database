@@ -1,6 +1,6 @@
+from datetime import datetime
 from decimal import Decimal
 import pandas as pd
-from DateTime import DateTime
 from fastapi import HTTPException
 from starlette import status
 
@@ -12,8 +12,8 @@ from status import EOrderStatus
 
 
 class OrderService(OrderRepo):
-    def get_order_service(self, created_at: DateTime, created_by: str,
-                          updated_at: DateTime, updated_by: str,
+    def get_order_service(self, created_at: datetime, created_by: str,
+                          updated_at: datetime, updated_by: str,
                           customer_name: str, from_price: Decimal, to_price: Decimal,
                           id: int, payment_method: str, name_shipping: str,
                           phone_shipping: str, address_shipping: str,
@@ -56,7 +56,7 @@ class OrderService(OrderRepo):
         order = OrderRepo().get_order_by_id_repo(order_id=order_id)
         return DataResponse(data=order)
 
-    def insert_order(self, order: OrderReq):
+    def insert_order_service(self, order: OrderReq):
         data_district = pd.read_excel('./district_29_07.xls', dtype=str)['Mã']
         data_province = pd.read_excel('./province_29_07.xls', dtype=str)['Mã']
         data_ward = pd.read_excel('./ward_29_07.xls', dtype=str)['Mã']

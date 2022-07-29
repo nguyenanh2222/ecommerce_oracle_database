@@ -103,13 +103,11 @@ class ProductRepo:
         rs = session.execute(query).fetchall()
         return rs
 
-    def get_all_products(self) -> List[Row]:
-        session: Session = SessionLocal()
-        return session.query(Product).all()
 
     def get_product_id(self, product_id: int) -> Row:
         session: Session = SessionLocal()
-        return session.query(Product).filter(Product.id == product_id).first()
+        rs = session.query(Product).filter(Product.id == product_id).first()
+        return rs
 
     def delete_product_repo(self, product_id: int):
         session: Session = SessionLocal()

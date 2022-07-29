@@ -2,7 +2,7 @@ from decimal import Decimal
 from fastapi.params import Query
 from pydantic.datetime_parse import datetime
 from starlette import status
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 from model import Order
 from project.schemas import DataResponse, PageResponse, Sort
@@ -74,8 +74,26 @@ def get_order_by_id_repo(order_id: int) -> DataResponse:
     response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
-def insert_order(order: OrderReq):
-    order = OrderService().insert_order(
+def insert_order(order: OrderReq = Body(..., examples={
+    "opt_1": {"value": {"created_at": datetime.now(),
+                        "created_by": 'admin',
+                        "updated_by": 'admin',
+                        "updated_at": datetime.now(),
+                        "customer_name": "anh",
+                        "price": 200_000,
+                        "payment_method": "COD",
+                        "items_count": 4,
+                        'name_shipping': 'An',
+                        'phone_shipping': '0334862105',
+                        'address_shipping': 'quan 8',
+                        'province_code_shipping': '001',
+                        'district_code_shipping': '001',
+                        'ward_code_shipping': '001',
+                        'customer_username': 'vietanh',
+                        'status': 'OPEN'
+}}
+})):
+    order = OrderService().insert_order_service(
         OrderReq(
             created_at=order.created_at,
             created_by=order.created_by,
@@ -103,8 +121,6 @@ def insert_order(order: OrderReq):
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
-
-
 def change_order_status(order_id: int, next_status: EOrderStatus) -> DataResponse:
     order = OrderService().change_order_status_service(order_id=order_id, next_status=next_status)
     return DataResponse(data=order)

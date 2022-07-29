@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import List
 
 from pydantic import BaseModel, Field
 from pydantic.datetime_parse import date
@@ -126,6 +127,19 @@ class CategoryRes(BaseModel):
     name: str = Field(None)
 
 
+class SkuReq(BaseUtil):
+    # id: int = Field(...)
+    status: str = Field(...)
+    quantity: int = Field(...)
+    images: bytes = Field(...)
+    seller_sku: str = Field(...)
+    color: str = Field(...)
+    package_width: int = Field(...)
+    package_height: int = Field(...)
+    package_length: int = Field(...)
+    package_weight: int = Field(...)
+    price: Decimal = Field(...)
+    size: str = Field(...)
 class ProductReq(BaseUtil):
     name: str = Field(...)
     description: str = Field(...)
@@ -136,6 +150,7 @@ class ProductReq(BaseUtil):
     color: str = Field(...)
     price: Decimal = Field(...)
     size_product: str = Field(...)
+    skus: List[SkuReq] = Field(...)
 
 
 class ProductRes(BaseUtil):
@@ -151,19 +166,6 @@ class ProductRes(BaseUtil):
     size_product: str = Field(None)
 
 
-class SkuReq(BaseUtil):
-    # id: int = Field(...)
-    status: str = Field(...)
-    quantity: int = Field(...)
-    images: bytes = Field(...)
-    seller_sku: str = Field(...)
-    color: str = Field(...)
-    package_width: int = Field(...)
-    package_height: int = Field(...)
-    package_length: int = Field(...)
-    package_weight: int = Field(...)
-    price: Decimal = Field(...)
-    size: str = Field(...)
 
 
 class SkuRes(BaseUtil):
