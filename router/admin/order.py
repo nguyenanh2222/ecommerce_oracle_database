@@ -94,6 +94,7 @@ def insert_order(order: OrderReq):
             status=order.status,
             district_code_shipping=order.district_code_shipping
         ))
+
     return DataResponse(data=order)
 
 

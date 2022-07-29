@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, ForeignKey, DateTime, func, BLOB, MetaDa
 from sqlalchemy.dialects.oracle import VARCHAR2, NUMBER
 from sqlalchemy.orm import as_declarative, declared_attr, declarative_base
 
-
 from database import engine
 
 
@@ -152,9 +151,6 @@ class OrderItem(BaseUtil):
     paid_price = Column(NUMBER(22, 2))
     shipping_fee = Column(NUMBER(22, 2))
 
-
-# insp = inspect(engine)
-# print(insp.get_table_names())
 
 metadata_obj = Base.metadata
 metadata_obj.bind = engine

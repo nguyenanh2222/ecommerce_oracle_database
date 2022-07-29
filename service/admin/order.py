@@ -1,14 +1,11 @@
-from datetime import datetime
 from decimal import Decimal
-from typing import List
-
 import pandas as pd
 from DateTime import DateTime
 from fastapi import HTTPException
 from starlette import status
 
 from model import Order
-from project.schemas import PageResponse, Sort, DataResponse
+from project.schemas import Sort, DataResponse
 from repo.order import OrderRepo
 from schema import OrderReq
 from status import EOrderStatus
@@ -43,6 +40,7 @@ class OrderService(OrderRepo):
                                              customer_username=customer_username,
                                              sort_direction=sort_direction,
                                              page=page, size=size)
+
         total_page = len(orders) / size
         current_page = page
         total_item = len(orders)

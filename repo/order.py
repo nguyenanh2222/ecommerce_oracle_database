@@ -91,6 +91,9 @@ class OrderRepo():
             status=order.status,
             district_code_shipping=order.district_code_shipping
     ))
+        session.commit()
+        order = session.get(Order, order.id)
+        return order
 
     def change_order_status_repo(self, order_id: int, next_status: EOrderStatus) -> Row:
         session: Session = SessionLocal()
