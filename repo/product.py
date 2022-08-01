@@ -46,32 +46,39 @@ class ProductRepo:
 
     def update_product_repo(self, product_id: int, product: ProductReq) -> Row:
         session: Session = SessionLocal()
-        stmt = update(Product).where(Product.id == product_id).values(created_at=product.created_at,
-                                                                      created_by=product.created_by,
-                                                                      updated_at=product.updated_at,
-                                                                      updated_by=product.updated_by,
-                                                                      name=product.name,
-                                                                      description=product.description,
-                                                                      brand=product.brand,
-                                                                      category_id=product.category_id).returning(
-            Product)
-        rs = session.execute(stmt).fetchone()
-        stmt = update(Sku).where(Sku.id == product_id).values(
-            created_at=product.created_at,
-            created_by=product.created_by,
-            updated_at=product.updated_at,
-            updated_by=product.updated_by,
-            quantity=product.quantity,
-            images=product.images,
-            color=product.color,
-            price=product.price,
-            size_product=product.size_product)
+        stmt = update(Product).values(created_at=product.created_at,
+                                      created_by=product.created_by,
+                                      updated_at=product.updated_at,
+                                      updated_by=product.updated_by,
+                                      name=product.name,
+                                      description=product.description,
+                                      brand=product.brand,
+                                      category_id=product.category_id
+                                      ).where(Product.id==product_id)
         session.execute(stmt)
         session.commit()
+        stmt = update(Sku).values(created_at=product.created_at,
+                                  created_by=product.created_by,
+                                  updated_at=product.updated_at,
+                                  updated_by=product.updated_by,
+                                  quantity=product.skus[0].quantity,
+                                  images=product.skus[0].images,
+                                  color=product.skus[0].color,
+                                  price=product.skus[0].price,
+                                  size_product=product.skus[0].size_product,
+                                  status=product.skus[0].status,
+                                  seller_sku=product.skus[0].seller_sku,
+                                  package_width=product.skus[0].package_width,
+                                  package_height=product.skus[0].package_height,
+                                  package_length=product.skus[0].package_length,
+                                  package_weight=product.skus[0].package_weight,
+                                  ).where(Sku.product_id==product_id)
+        session.execute(stmt)
+        session.commit()
+        rs = session.get(Product, product_id)
         return rs
 
-    def get_products_repo(self, created_at: DateTime, created_by: str,
-                          updated_at: DateTime, updated_by: str,
+    def get_products_repo(self,
                           name: str, category: str,
                           color: str,
                           from_price: Decimal, to_price: Decimal,
@@ -80,14 +87,6 @@ class ProductRepo:
                           sort_direction: Sort.Direction) -> List[Row]:
         session: Session = SessionLocal()
         query = session.query(Product)
-        if created_at:
-            query = query.filter(Product.created_at == created_at)
-        if updated_at:
-            query = query.filter(Product.updated_at == updated_at)
-        if created_by:
-            query = query.filter(Product.created_by.like(f"%{created_by}%"))
-        if updated_by:
-            query = query.filter(Product.updated_by.like(f"%{created_by}%"))
         if name:
             query = query.filter(Product.name.like(f"%{name}%"))
         if category:
@@ -118,5 +117,10 @@ class ProductRepo:
 
     def delete_product_repo(self, product_id: int):
         session: Session = SessionLocal()
-        query = delete(Product).where(Product.id == product_id)
+        query = delete(Sku).where(Sku.product_id == product_id)
         session.execute(query)
+        session.commit()
+        query = delete(Product).where(Product.id == product_id)
+        session.commit()
+        session.execute(query)
+        return session.get(Product, product_id)
