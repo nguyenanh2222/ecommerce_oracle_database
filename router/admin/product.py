@@ -96,15 +96,6 @@ def get_products(created_at: datetime = Query(datetime.strptime("2021-11-29", "%
     return DataResponse(data=products)
 
 
-@router.get(
-    path="/all/products",
-    response_model=DataResponse,
-    status_code=status.HTTP_200_OK
-)
-def get_all_products() -> DataResponse:
-    products = ProductService().get_all_products()
-    return DataResponse(data=products)
-
 
 @router.get(
     path="/product",

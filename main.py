@@ -3,13 +3,14 @@ from hashlib import sha256
 
 from fastapi import FastAPI
 from loguru import logger
-from sqlalchemy import create_engine, insert, func, text
+from sqlalchemy import create_engine, insert
 
-from database import engine, username, password, host, port, database
+from database import username, password, host, port, database
 from model import *
 from router.base import router as router_user
 from router.admin.product import router as router_admin_product
 from router.admin.order import router as router_admin_order
+from status import EOrderStatus
 
 app = FastAPI(
     debug=True
@@ -69,22 +70,29 @@ async def startup():
         product_id=1,
         images=json.dumps([{"name": "bbi0.jpg"}])
     ))
-    # engine.execute(insert(Permission).values(code='001',
-    #                                          name='EDIT'))
-    # engine.execute(insert(RolePermission).values(
-    #     permission_code='EDIT',
-    #     role_code='001'))
-    # engine.execute(insert(Role).values(code='001',
-    #                                    name='ADMIN'))
-    # engine.execute(insert(UserRole).values(username='vietanh',
-    #                                        role_code='001'))
-    # engine.execute(insert(User).values(username='vietanh',
-    #                                    password=sha256(
-    #                                        "12345678".encode('utf-8')).hexdigest(),
-    #                                    firstname='anh',
-    #                                    lastname='nguyen'
-    #                                    ))
-    # engine.execute(insert(CarItem).values())
+
+    engine.execute(insert(User).values(username='vietanh',
+                                       password=sha256(
+                                           "12345678".encode('utf-8')).hexdigest(),
+                                       firstname='anh',
+                                       lastname='nguyen'
+                                       ))
+    engine.execute(insert(Role).values(code='001',
+                                       name='ADMIN'))
+
+    engine.execute(insert(UserRole).values(username='vietanh',
+                                           role_code='001'))
+
+    engine.execute(insert(Permission).values(code='00E',
+                                             name='EDIT'))
+
+    engine.execute(insert(RolePermission).values(
+        permission_code='00E',
+        role_code='001'))
+
+    engine.execute(insert(CarItem).values(name="nguyen"))
+    engine.execute(insert(Order).values(status=EOrderStatus.CANCELLED))
+    engine.execute(insert(OrderItem).values(shipping_fee=15_000))
 
 
 @app.on_event("shutdown")
