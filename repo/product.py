@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import List
 
+from fastapi import UploadFile
 from sqlalchemy import insert, select, update, DateTime, delete
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
@@ -54,7 +55,7 @@ class ProductRepo:
                                       description=product.description,
                                       brand=product.brand,
                                       category_id=product.category_id
-                                      ).where(Product.id==product_id)
+                                      ).where(Product.id == product_id)
         session.execute(stmt)
         session.commit()
         stmt = update(Sku).values(created_at=product.created_at,
@@ -72,7 +73,7 @@ class ProductRepo:
                                   package_height=product.skus[0].package_height,
                                   package_length=product.skus[0].package_length,
                                   package_weight=product.skus[0].package_weight,
-                                  ).where(Sku.product_id==product_id)
+                                  ).where(Sku.product_id == product_id)
         session.execute(stmt)
         session.commit()
         rs = session.get(Product, product_id)
@@ -124,3 +125,9 @@ class ProductRepo:
         session.commit()
         session.execute(query)
         return session.get(Product, product_id)
+
+    def create_upload_file_repo(self, file: UploadFile, product_id):
+        session: Session = SessionLocal()
+        stmt = update(Sku).values(images=file.filename).where(Sku.product_id == product_id)
+        session.execute(stmt)
+        session.commit()

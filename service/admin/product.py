@@ -2,7 +2,7 @@ import datetime
 import math
 from decimal import Decimal
 
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 from starlette import status
 
 from project.schemas import DataResponse, Sort, PageResponse
@@ -106,3 +106,10 @@ class ProductService(ProductRepo):
     def delete_product_service(self, product_id: int):
         product = ProductRepo().delete_product_repo(product_id=product_id)
         return product
+
+    def create_upload_file_service(self, file: UploadFile, product_id: int):
+        product = ProductRepo().create_upload_file_repo(file=file, product_id=product_id)
+
+
+
+

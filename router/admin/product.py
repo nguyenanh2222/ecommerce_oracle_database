@@ -1,9 +1,11 @@
+import os
 from datetime import datetime
 from decimal import Decimal
 
+from fastapi.encoders import jsonable_encoder
 from fastapi.openapi.models import Response
 from starlette import status
-from fastapi import APIRouter, Query, Body
+from fastapi import APIRouter, Query, Body, UploadFile
 from starlette.responses import FileResponse
 
 from project.schemas import DataResponse, Sort, PageResponse
@@ -135,8 +137,20 @@ def delete_product(product_id: int):
     return product
 
 
-@router.get(
-    path="/files/{name}"
+
+@router.post(
+    path="/file/",
+    response_class=FileResponse
 )
-async def get_file(name: str):
-    return FileResponse(f"files/{name}")
+async def create_upload_file(file: UploadFile, product_id: int):
+    product = ProductService().create_upload_file_service(file=file, product_id=product_id)
+    try:
+        os.mkdir("../files")
+    except Exception as e:
+        print(e)
+    file_name = os.getcwd() + "/files/" + file.filename.replace(" ", "-")
+    with open(file_name, 'wb+') as f:
+        f.write(file.file.read())
+        f.close()
+    return FileResponse(file_name)
+
