@@ -1,18 +1,16 @@
 import os
-from datetime import datetime
+
 from decimal import Decimal
 
-from fastapi.encoders import jsonable_encoder
-from fastapi.openapi.models import Response
 from starlette import status
 from fastapi import APIRouter, Query, Body, UploadFile
-from starlette.responses import FileResponse
+
 
 from project.schemas import DataResponse, Sort, PageResponse
 from router.examples.product import product_op1
 from schema import ProductRes, ProductReq, SkuReq
 from service.admin.product import ProductService
-from status import EOrderStatus
+
 
 router = APIRouter()
 

@@ -1,17 +1,20 @@
-from fastapi import APIRouter
+from datetime import datetime
+
+from fastapi import APIRouter, Body, Query
 from starlette import status
 
 from project.schemas import DataResponse
 from repo.product import ProductRepo
+from router.examples.user import user_op1
 from schema import UserReq, UserRes, ProductReq, SkuReq, ProductRes
-from service.base import UserService
+from service.user import UserService
 
 router = APIRouter()
 
 
 @router.post(path="/user",
              response_model=DataResponse,
-             status_code=status.HTTP_200_OK)
+             status_code=status.HTTP_201_CREATED)
 def insert_user(user: UserReq):
     user = UserService().insert_user_service(UserReq(created_at=user.created_at,
                                                      created_by=user.created_by,
@@ -24,18 +27,29 @@ def insert_user(user: UserReq):
     return DataResponse(data=user)
 
 
-# @router.put(path="/user")
-# def update_user_router(username: str, user: UserReq):
-#     username = 'A'
-#     return user
-#
-#
-# @router.get(path="/users")
-# def get_user_router(created_at: datetime, created_by: str,
-#                     updated_at: datetime, updated_by: str,
-#                     first_name: str, last_name: str,
-#                     page: int, size: int):
-#     ...
+@router.put(
+    path="/user",
+    response_model=DataResponse,
+    status_code=status.HTTP_200_OK
+)
+def update_user(username: str, user: UserReq = Body(..., examples=user_op1)):
+    user = UserService().update_user_service(username=username, user=UserReq(
+        created_at=user.created_at,
+        created_by=user.created_by,
+        updated_at=user.updated_at,
+        updated_by=user.updated_by,
+        password=user.password,
+        firstname=user.password,
+        lastname=user.lastname
+    ))
+    return DataResponse(data=user)
+
+
+@router.get(path="/users",
+            response_model=DataResponse,
+            status_code=status.HTTP_200_OK)
+def get_user_router():
+    ...
 #
 #
 # @router.get(path="/permissions")
@@ -46,8 +60,3 @@ def insert_user(user: UserReq):
 # @router.get(path="/{username}")
 # def delete_user_router(username: str):
 #     ...
-
-
-
-
-

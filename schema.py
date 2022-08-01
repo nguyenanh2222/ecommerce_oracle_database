@@ -62,11 +62,12 @@ class UserRoleRes(BaseModel):
     role_code: str = Field(None)
 
 
-class UserReq(BaseModel):
-    username: str = Field(..., autoincrement=True, nullable=True)
+class UserReq(BaseUtil):
+    username: str = Field(None, autoincrement=True, nullable=True)
     password: str = Field(...)
     firstname: str = Field(...)
     lastname: str = Field(...)
+
 
 
 class UserRes(BaseUtil):

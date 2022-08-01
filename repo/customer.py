@@ -1,9 +1,6 @@
-from typing import List
-
 from sqlalchemy import select, insert, update, delete
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
-
 from database import SessionLocal
 from model import Customer, User
 from schema import CustomerReq

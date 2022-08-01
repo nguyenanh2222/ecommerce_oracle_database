@@ -10,7 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from database import username, password, host, port, database
 from model import *
-from router.base import router as router_user
+from router.user import router as router_user
 from router.admin.product import router as router_admin_product
 from router.admin.order import router as router_admin_order
 from router.customer.customer import router as router_customer
@@ -37,8 +37,10 @@ app.add_middleware(
 class Tags(str, Enum):
     customer = "[Customer]"
     admin = "[Admin]"
+    user = "[User]"
 
-app.include_router(router_user, prefix="/user", tags=[Tags.admin])
+
+app.include_router(router_user, prefix="/user", tags=[Tags.user])
 app.include_router(router_admin_product, prefix="/product", tags=[Tags.admin])
 app.include_router(router_admin_order, prefix="/order", tags=[Tags.admin])
 app.include_router(router_customer, prefix="/customer", tags=[Tags.customer])
