@@ -62,7 +62,7 @@ class UserRoleRes(BaseModel):
     role_code: str = Field(None)
 
 
-class UserReq(BaseUtil):
+class UserReq(BaseModel):
     username: str = Field(..., autoincrement=True, nullable=True)
     password: str = Field(...)
     firstname: str = Field(...)
@@ -77,18 +77,15 @@ class UserRes(BaseUtil):
 
 
 class CustomerReq(BaseUtil):
-    username: str = Field(...)
-    password: str = Field(...)
-    firstname: str = Field(...)
-    lastname: str = Field(...)
     phone: str = Field(...)
     address: str = Field(...)
     province_code: str = Field(...)
     district_code: str = Field(...)
     ward_code: str = Field(...)
+    user: UserReq = Field(...)
 
 
-class CustomerRes(BaseUtil):
+class CustomerRes(BaseModel):
     username: str = Field(None)
     password: str = Field(None)
     firstname: str = Field(None)
@@ -140,6 +137,8 @@ class SkuReq(BaseModel):
     package_weight: int = Field(...)
     price: Decimal = Field(...)
     size_product: str = Field(...)
+
+
 class ProductReq(BaseUtil):
     name: str = Field(...)
     description: str = Field(...)
@@ -159,8 +158,6 @@ class ProductRes(BaseUtil):
     color: str = Field(None)
     price: Decimal = Field(None)
     size_product: str = Field(None)
-
-
 
 
 class SkuRes(BaseUtil):

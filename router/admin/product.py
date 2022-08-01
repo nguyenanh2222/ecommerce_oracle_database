@@ -139,11 +139,10 @@ def delete_product(product_id: int):
 
 
 @router.post(
-    path="/file/",
-    response_class=FileResponse
+    path="/file/"
 )
-async def create_upload_file(file: UploadFile, product_id: int):
-    product = ProductService().create_upload_file_service(file=file, product_id=product_id)
+async def create_upload_file(file: UploadFile):
+    product = ProductService().create_upload_file_service(file=file)
     try:
         os.mkdir("../files")
     except Exception as e:
@@ -152,5 +151,5 @@ async def create_upload_file(file: UploadFile, product_id: int):
     with open(file_name, 'wb+') as f:
         f.write(file.file.read())
         f.close()
-    return FileResponse(file_name)
+    return {'file_name': file.filename}
 

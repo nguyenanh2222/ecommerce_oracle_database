@@ -107,8 +107,8 @@ class ProductService(ProductRepo):
         product = ProductRepo().delete_product_repo(product_id=product_id)
         return product
 
-    def create_upload_file_service(self, file: UploadFile, product_id: int):
-        product = ProductRepo().create_upload_file_repo(file=file, product_id=product_id)
+    def create_upload_file_service(self, file: UploadFile):
+        product = ProductRepo().create_upload_file_repo(file=file)
 
 
 

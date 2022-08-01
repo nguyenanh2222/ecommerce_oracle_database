@@ -126,8 +126,8 @@ class ProductRepo:
         session.execute(query)
         return session.get(Product, product_id)
 
-    def create_upload_file_repo(self, file: UploadFile, product_id):
+    def create_upload_file_repo(self, file: UploadFile):
         session: Session = SessionLocal()
-        stmt = update(Sku).values(images=file.filename).where(Sku.product_id == product_id)
+        stmt = insert(Sku).values(images=file.filename)
         session.execute(stmt)
         session.commit()

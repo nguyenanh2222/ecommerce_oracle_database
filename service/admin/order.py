@@ -5,15 +5,14 @@ from fastapi import HTTPException
 from starlette import status
 
 from model import Order
-from project.schemas import Sort, DataResponse
+from project.schemas import Sort, DataResponse, PageResponse
 from repo.order import OrderRepo
 from schema import OrderReq
 from status import EOrderStatus
 
 
 class OrderService(OrderRepo):
-    def get_order_service(self, created_at: datetime, created_by: str,
-                          updated_at: datetime, updated_by: str,
+    def get_order_service(self,
                           customer_name: str, from_price: Decimal, to_price: Decimal,
                           id: int, payment_method: str, name_shipping: str,
                           phone_shipping: str, address_shipping: str,
@@ -21,11 +20,8 @@ class OrderService(OrderRepo):
                           district_code_shipping: str,
                           customer_username: str,
                           sort_direction: Sort.Direction,
-                          page: int, size: int) -> DataResponse:
-        orders = OrderRepo().get_orders_repo(created_at=created_at,
-                                             created_by=created_by,
-                                             updated_at=updated_at,
-                                             updated_by=updated_by,
+                          page: int, size: int) -> PageResponse:
+        orders = OrderRepo().get_orders_repo(
                                              customer_name=customer_name,
                                              from_price=from_price,
                                              to_price=to_price,
@@ -47,7 +43,7 @@ class OrderService(OrderRepo):
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-        return DataResponse(data=orders,
+        return PageResponse(data=orders,
                             total_item=total_item,
                             total_page=total_page,
                             current_page=current_page)

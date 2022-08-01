@@ -1,23 +1,47 @@
 import json
+from enum import Enum
 from hashlib import sha256
 
 from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 from loguru import logger
 from sqlalchemy import create_engine, insert
+from starlette.middleware.cors import CORSMiddleware
 
 from database import username, password, host, port, database
 from model import *
 from router.base import router as router_user
 from router.admin.product import router as router_admin_product
 from router.admin.order import router as router_admin_order
+from router.customer.customer import router as router_customer
 from status import EOrderStatus
 
 app = FastAPI(
-    debug=True
+    title="ecommerce",
+    description="ecommerce description",
+    debug=True,
+    version="0.0.3",
+    docs_url="/",
+    redoc_url="/redoc",
+    default_response_class=ORJSONResponse,
 )
-app.include_router(router_user)
-app.include_router(router_admin_product)
-app.include_router(router_admin_order)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["POST", "GET"],
+)
+
+
+class Tags(str, Enum):
+    customer = "[Customer]"
+    admin = "[Admin]"
+
+app.include_router(router_user, prefix="/user", tags=[Tags.admin])
+app.include_router(router_admin_product, prefix="/product", tags=[Tags.admin])
+app.include_router(router_admin_order, prefix="/order", tags=[Tags.admin])
+app.include_router(router_customer, prefix="/customer", tags=[Tags.customer])
 
 tables = ("ORDER_ITEM", "SKU", "PRODUCT", "CATEGORY", "TBL_ORDER", "CART_ITEM")
 
