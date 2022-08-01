@@ -5,6 +5,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from pydantic.datetime_parse import date
 
+from model import Base
 from status import EOrderStatus
 
 
@@ -62,10 +63,11 @@ class UserRoleRes(BaseModel):
 
 
 class UserReq(BaseUtil):
-    username: str = Field(..., autoincrement=True, nullable=True)
+    username: str = Field(None, autoincrement=True, nullable=True)
     password: str = Field(...)
     firstname: str = Field(...)
     lastname: str = Field(...)
+
 
 
 class UserRes(BaseUtil):
@@ -76,18 +78,15 @@ class UserRes(BaseUtil):
 
 
 class CustomerReq(BaseUtil):
-    username: str = Field(...)
-    password: str = Field(...)
-    firstname: str = Field(...)
-    lastname: str = Field(...)
     phone: str = Field(...)
     address: str = Field(...)
     province_code: str = Field(...)
     district_code: str = Field(...)
     ward_code: str = Field(...)
+    user: UserReq = Field(...)
 
 
-class CustomerRes(BaseUtil):
+class CustomerRes(BaseModel):
     username: str = Field(None)
     password: str = Field(None)
     firstname: str = Field(None)
@@ -127,8 +126,7 @@ class CategoryRes(BaseModel):
     name: str = Field(None)
 
 
-class SkuReq(BaseUtil):
-    # id: int = Field(...)
+class SkuReq(BaseModel):
     status: str = Field(...)
     quantity: int = Field(...)
     images: bytes = Field(...)
@@ -139,17 +137,14 @@ class SkuReq(BaseUtil):
     package_length: int = Field(...)
     package_weight: int = Field(...)
     price: Decimal = Field(...)
-    size: str = Field(...)
+    size_product: str = Field(...)
+
+
 class ProductReq(BaseUtil):
     name: str = Field(...)
     description: str = Field(...)
     brand: str = Field(...)
     category_id: int = Field(...)
-    quantity: int = Field(...)
-    images: bytes = Field(...)
-    color: str = Field(...)
-    price: Decimal = Field(...)
-    size_product: str = Field(...)
     skus: List[SkuReq] = Field(...)
 
 
@@ -164,8 +159,6 @@ class ProductRes(BaseUtil):
     color: str = Field(None)
     price: Decimal = Field(None)
     size_product: str = Field(None)
-
-
 
 
 class SkuRes(BaseUtil):

@@ -1,9 +1,6 @@
 from datetime import datetime
-
-from model import Product, Sku
-from repo.product import ProductRepo
 from repo.user import UserRepo
-from schema import UserReq, SkuReq, ProductReq
+from schema import UserReq
 
 
 class UserService(UserRepo):
@@ -19,12 +16,19 @@ class UserService(UserRepo):
         return user
 
     def update_user_service(self, username: str, user: UserReq):
-        ...
+        user = UserRepo().update_product_repo(username=username,
+                                              user=UserReq(
+                                                  created_at=user.created_at,
+                                                  created_by=user.created_by,
+                                                  updated_at=user.updated_at,
+                                                  updated_by=user.updated_by,
+                                                  password=user.password,
+                                                  firstname=user.password,
+                                                  lastname=user.lastname
+                                              ))
+        return user
 
-    def get_user_service(self, created_at: datetime, created_by: str,
-                         updated_at: datetime, updated_by: str,
-                         first_name: str, last_name: str,
-                         page: int, size: int):
+    def get_user_service():
         ...
 
     def get_permission_repo(self, permission_name: str, role_name: str):
@@ -32,5 +36,3 @@ class UserService(UserRepo):
 
     def delete_user_repo(self, username: str):
         ...
-
-

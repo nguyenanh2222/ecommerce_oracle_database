@@ -13,8 +13,7 @@ from status import EOrderStatus
 
 
 class OrderRepo():
-    def get_orders_repo(self, created_at: DateTime, created_by: str,
-                        updated_at: DateTime, updated_by: str,
+    def get_orders_repo(self,
                         customer_name: str, from_price: Decimal, to_price: Decimal,
                         id: int, payment_method: str, name_shipping: str,
                         phone_shipping: str, address_shipping: str,
@@ -25,14 +24,6 @@ class OrderRepo():
                         page: int, size: int) -> List[Row]:
         session: Session = SessionLocal()
         query = session.query(Order)
-        if created_at:
-            query = query.filter(Order.created_at == created_at)
-        if updated_at:
-            query = query.filter(Order.updated_at == updated_at)
-        if created_by:
-            query = query.filter(Order.created_by.like(f"%{created_by}%"))
-        if updated_by:
-            query = query.filter(Order.updated_by.like(f"%{created_by}%"))
         if customer_name:
             query = query.filter(Order.customer_name.like(f"%{customer_name}%"))
         if from_price:

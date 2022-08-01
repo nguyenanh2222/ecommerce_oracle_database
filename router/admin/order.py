@@ -6,6 +6,7 @@ from fastapi import APIRouter, Body
 
 from model import Order
 from project.schemas import DataResponse, PageResponse, Sort
+from router.admin.examples.order import order_op1
 from schema import OrderReq
 from service.admin.order import OrderService
 from status import EOrderStatus
@@ -18,45 +19,41 @@ router = APIRouter()
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
-def get_products_service(created_at: datetime = Query(datetime.strptime("2021-11-29", "%Y-%m-%d")),
-                         created_by: str = Query(None),
-                         updated_at: datetime = Query(datetime.strptime("2021-11-29", "%Y-%m-%d")),
-                         updated_by: str = Query(None),
-                         customer_name: str = Query(None),
-                         from_price: Decimal = Query(None),
-                         to_price: Decimal = Query(None),
-                         id: int = Query(None),
-                         payment_method: str = Query(None),
-                         name_shipping: str = Query(None),
-                         phone_shipping: str = Query(None),
-                         address_shipping: str = Query(None),
-                         province_code_shipping: str = Query(None),
-                         ward_code_shipping: str = Query(None),
-                         district_code_shipping: str = Query(None),
-                         customer_username: str = Query(None),
-                         sort_direction: Sort.Direction = Query(None),
-                         page: int = Query(1),
-                         size: int = Query(10)
-                         ) -> DataResponse:
-    orders = OrderService().get_order_service(created_at=created_at,
-                                              created_by=created_by,
-                                              updated_at=updated_at,
-                                              updated_by=updated_by,
-                                              customer_name=customer_name,
-                                              from_price=from_price,
-                                              to_price=to_price,
-                                              id=id,
-                                              payment_method=payment_method,
-                                              name_shipping=name_shipping,
-                                              phone_shipping=phone_shipping,
-                                              address_shipping=address_shipping,
-                                              province_code_shipping=province_code_shipping,
-                                              ward_code_shipping=ward_code_shipping,
-                                              district_code_shipping=district_code_shipping,
-                                              customer_username=customer_username,
-                                              sort_direction=sort_direction,
-                                              page=page, size=size)
-    return DataResponse(data=orders)
+def get_orders(customer_name: str = Query(None),
+               from_price: Decimal = Query(None),
+               to_price: Decimal = Query(None),
+               id: int = Query(None),
+               payment_method: str = Query(None),
+               name_shipping: str = Query(None),
+               phone_shipping: str = Query(None),
+               address_shipping: str = Query(None),
+               province_code_shipping: str = Query(None),
+               ward_code_shipping: str = Query(None),
+               district_code_shipping: str = Query(None),
+               customer_username: str = Query(None),
+               sort_direction: Sort.Direction = Query(None),
+               page: int = Query(1),
+               size: int = Query(10)
+               ) -> PageResponse:
+    orders = OrderService().get_order_service(
+        customer_name=customer_name,
+        from_price=from_price,
+        to_price=to_price,
+        id=id,
+        payment_method=payment_method,
+        name_shipping=name_shipping,
+        phone_shipping=phone_shipping,
+        address_shipping=address_shipping,
+        province_code_shipping=province_code_shipping,
+        ward_code_shipping=ward_code_shipping,
+        district_code_shipping=district_code_shipping,
+        customer_username=customer_username,
+        sort_direction=sort_direction,
+        page=page, size=size)
+    return PageResponse(data=orders.data,
+                        total_item=orders.total_items,
+                        total_page=orders.total_page,
+                        current_page=orders.current_page)
 
 
 @router.get(
@@ -64,7 +61,7 @@ def get_products_service(created_at: datetime = Query(datetime.strptime("2021-11
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
-def get_order_by_id_repo(order_id: int) -> DataResponse:
+def get_order_by_id(order_id: int) -> DataResponse:
     order = OrderService().get_order_by_id_service(order_id=order_id)
     return DataResponse(data=order)
 
@@ -74,25 +71,7 @@ def get_order_by_id_repo(order_id: int) -> DataResponse:
     response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
-def insert_order(order: OrderReq = Body(..., examples={
-    "opt_1": {"value": {"created_at": datetime.now(),
-                        "created_by": 'admin',
-                        "updated_by": 'admin',
-                        "updated_at": datetime.now(),
-                        "customer_name": "anh",
-                        "price": 200_000,
-                        "payment_method": "COD",
-                        "items_count": 4,
-                        'name_shipping': 'An',
-                        'phone_shipping': '0334862105',
-                        'address_shipping': 'quan 8',
-                        'province_code_shipping': '001',
-                        'district_code_shipping': '001',
-                        'ward_code_shipping': '001',
-                        'customer_username': 'vietanh',
-                        'status': 'OPEN'
-}}
-})):
+def insert_order(order: OrderReq = Body(..., examples=order_op1)):
     order = OrderService().insert_order_service(
         OrderReq(
             created_at=order.created_at,
@@ -112,7 +91,6 @@ def insert_order(order: OrderReq = Body(..., examples={
             status=order.status,
             district_code_shipping=order.district_code_shipping
         ))
-
     return DataResponse(data=order)
 
 

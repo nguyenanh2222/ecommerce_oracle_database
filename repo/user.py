@@ -26,39 +26,21 @@ class UserRepo:
 
     def update_product_repo(self, username: str, user: UserReq) -> Row:
         session: Session = SessionLocal()
-        query = update(User).where(username == id).values(created_at=user.created_at,
-                                                                created_by=user.created_by,
-                                                                update_at=user.updated_at,
-                                                                update_by=user.updated_by,
-                                                                password=user.password,
-                                                                first_name=user.password,
-                                                                last_name=user.lastname).returning(User)
-        rs = session.execute(query).fetchall()
+        query = update(User).values(created_at=user.created_at,
+                                    created_by=user.created_by,
+                                    updated_at=user.updated_at,
+                                    updated_by=user.updated_by,
+                                    password=user.password,
+                                    firstname=user.password,
+                                    lastname=user.lastname).where(
+            User.username == username)
+        session.execute(query)
         session.commit()
+        rs = session.get(User, username)
         return rs
 
-    def get_user_repo(self, created_at: date, created_by: str,
-                      updated_at: date, updated_by: str,
-                      first_name: str, last_name: str,
-                      page: int, size: int) -> List[Row]:
-        session: Session = SessionLocal()
-        query = select(UserRole).join(User, User.username)
-        if created_at:
-            query += query.where(User.created_at == created_at)
-        if updated_at:
-            query += query.where(User.updated_at == updated_at)
-        if created_by:
-            query += query.where(User.created_by == created_by)
-        if updated_by:
-            query += query.where(User.updated_by == updated_by)
-        if first_name:
-            query += query.where(User.firstname == first_name)
-        if last_name:
-            query += query.where(User.lastname == last_name)
-        if page and size:
-            query += query.limit(size).offset((page - 1) * size)
-        rs = session.execute(query).fetchall()
-        return rs
+    def get_user_repo(self):
+        ...
 
     def get_permission_repo(self, permission_name: str, role_name: str):
         session: Session = SessionLocal()

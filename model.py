@@ -82,7 +82,6 @@ class CarItem(BaseUtil):
     __tablename__ = "cart_item"
 
     id = Column(Integer, primary_key=True)
-    order_id = Column(Integer)
     sku_id = Column(Integer)
     name = Column(VARCHAR2(200))
     main_image = Column(VARCHAR2(200))
