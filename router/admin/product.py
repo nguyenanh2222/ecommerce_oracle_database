@@ -2,12 +2,14 @@ from datetime import datetime
 from decimal import Decimal
 
 from starlette import status
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Body
 from starlette.responses import FileResponse
 
 from project.schemas import DataResponse, Sort
-from schema import ProductRes, ProductReq
+from router.examples.product import product_op1
+from schema import ProductRes, ProductReq, SkuReq
 from service.admin.product import ProductService
+from status import EOrderStatus
 
 router = APIRouter()
 
@@ -17,7 +19,7 @@ router = APIRouter()
     response_model=DataResponse[ProductRes],
     status_code=status.HTTP_201_CREATED
 )
-def insert_product(product: ProductReq):
+def insert_product(product: ProductReq = Body(..., examples=product_op1)):
     product = ProductService().insert_product_service(ProductReq(
         name=product.name,
         description=product.description,
@@ -27,12 +29,23 @@ def insert_product(product: ProductReq):
         updated_at=product.updated_at,
         updated_by=product.updated_by,
         category_id=product.category_id,
-        quantity=product.quantity,
-        images=product.images,
-        color=product.color,
-        price=product.price,
-        size_product=product.size_product
-    ))
+        skus=[SkuReq(created_at=product.created_at,
+                     created_by=product.created_by,
+                     updated_at=product.updated_at,
+                     updated_by=product.updated_by,
+                     quantity=product.skus[0].quantity,
+                     images=product.skus[0].images,
+                     color=product.skus[0].color,
+                     price=product.skus[0].price,
+                     size_product=product.skus[0].size_product,
+                     status=product.skus[0].status,
+                     seller_sku=product.skus[0].seller_sku,
+                     package_width=product.skus[0].package_width,
+                     package_height=product.skus[0].package_height,
+                     package_length=product.skus[0].package_length,
+                     package_weight=product.skus[0].package_weight,
+
+                     )]))
     return DataResponse(data=product)
 
 
@@ -96,7 +109,6 @@ def get_products(created_at: datetime = Query(datetime.strptime("2021-11-29", "%
     return DataResponse(data=products)
 
 
-
 @router.get(
     path="/product",
     response_model=DataResponse,
@@ -120,4 +132,3 @@ def delete_product(product_id: int):
 )
 async def get_file(name: str):
     return FileResponse(f"files/{name}")
-

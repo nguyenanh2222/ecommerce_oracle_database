@@ -7,12 +7,11 @@ from starlette import status
 
 from project.schemas import DataResponse, Sort
 from repo.product import ProductRepo
-from schema import ProductReq
+from schema import ProductReq, SkuReq
 
 
 class ProductService(ProductRepo):
-    def insert_product_service(self, product: ProductReq) -> DataResponse:
-        #case category_id : must have in table category
+    def insert_product_service(self, product: ProductReq):
         product = ProductRepo().insert_product_repo(ProductReq(
             created_at=product.created_at,
             created_by=product.created_by,
@@ -22,16 +21,26 @@ class ProductService(ProductRepo):
             description=product.description,
             brand=product.brand,
             category_id=product.category_id,
-            quantity=product.quantity,
-            images=product.images,
-            color=product.color,
-            price=product.price,
-            size_product=product.size_product))
+            skus=[SkuReq(created_at=product.created_at,
+                         created_by=product.created_by,
+                         updated_at=product.updated_at,
+                         updated_by=product.updated_by,
+                         quantity=product.skus[0].quantity,
+                         images=product.skus[0].images,
+                         color=product.skus[0].color,
+                         price=product.skus[0].price,
+                         size_product=product.skus[0].size_product,
+                         status=product.skus[0].status,
+                         seller_sku=product.skus[0].seller_sku,
+                         package_width=product.skus[0].package_width,
+                         package_height=product.skus[0].package_height,
+                         package_length=product.skus[0].package_length,
+                         package_weight=product.skus[0].package_weight,
 
-        return DataResponse(data=product)
+                         )]))
+        return product
 
     def update_product_service(self, product: ProductReq, product_id: int):
-        #case category_id not found
         product = ProductRepo().update_product_repo(product_id=product_id,
                                                     product=ProductReq(
                                                         name=product.name,
@@ -81,9 +90,6 @@ class ProductService(ProductRepo):
                             total_page=total_page,
                             current_page=current_page)
 
-    def get_all_products_service(self) -> DataResponse:
-        products = ProductRepo().get_all_products()
-        return DataResponse(data=products)
 
     def get_product_id_service(self, product_id: int) -> DataResponse:
         product = ProductRepo().get_product_id(product_id=product_id)
