@@ -5,6 +5,7 @@ from typing import List
 from pydantic import BaseModel, Field
 from pydantic.datetime_parse import date
 
+from model import Base
 from status import EOrderStatus
 
 
@@ -127,8 +128,7 @@ class CategoryRes(BaseModel):
     name: str = Field(None)
 
 
-class SkuReq(BaseUtil):
-    # id: int = Field(...)
+class SkuReq(BaseModel):
     status: str = Field(...)
     quantity: int = Field(...)
     images: bytes = Field(...)
@@ -139,17 +139,12 @@ class SkuReq(BaseUtil):
     package_length: int = Field(...)
     package_weight: int = Field(...)
     price: Decimal = Field(...)
-    size: str = Field(...)
+    size_product: str = Field(...)
 class ProductReq(BaseUtil):
     name: str = Field(...)
     description: str = Field(...)
     brand: str = Field(...)
     category_id: int = Field(...)
-    quantity: int = Field(...)
-    images: bytes = Field(...)
-    color: str = Field(...)
-    price: Decimal = Field(...)
-    size_product: str = Field(...)
     skus: List[SkuReq] = Field(...)
 
 

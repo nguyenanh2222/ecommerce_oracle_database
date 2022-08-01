@@ -23,18 +23,26 @@ class ProductRepo:
                                       category_id=product.category_id
                                       )
         session.execute(stmt)
+        session.commit()
         stmt = insert(Sku).values(created_at=product.created_at,
                                   created_by=product.created_by,
                                   updated_at=product.updated_at,
                                   updated_by=product.updated_by,
-                                  quantity=product.quantity,
-                                  images=product.images,
-                                  color=product.color,
-                                  price=product.price,
-                                  size_product=product.size_product)
-        session.execute(stmt)
+                                  quantity=product.skus[0].quantity,
+                                  images=product.skus[0].images,
+                                  color=product.skus[0].color,
+                                  price=product.skus[0].price,
+                                  size_product=product.skus[0].size_product,
+                                  status=product.skus[0].status,
+                                  seller_sku=product.skus[0].seller_sku,
+                                  package_width=product.skus[0].package_width,
+                                  package_height=product.skus[0].package_height,
+                                  package_length=product.skus[0].package_length,
+                                  package_weight=product.skus[0].package_weight,
+                                  )
+        rs = session.execute(stmt).fetchone()
         session.commit()
-        return product
+        return rs
 
     def update_product_repo(self, product_id: int, product: ProductReq) -> Row:
         session: Session = SessionLocal()
@@ -45,8 +53,9 @@ class ProductRepo:
                                                                       name=product.name,
                                                                       description=product.description,
                                                                       brand=product.brand,
-                                                                      category_id=product.category_id)
-        session.execute(stmt)
+                                                                      category_id=product.category_id).returning(
+            Product)
+        rs = session.execute(stmt).fetchone()
         stmt = update(Sku).where(Sku.id == product_id).values(
             created_at=product.created_at,
             created_by=product.created_by,
@@ -59,8 +68,7 @@ class ProductRepo:
             size_product=product.size_product)
         session.execute(stmt)
         session.commit()
-        product = session.get(Product, product_id)
-        return product
+        return rs
 
     def get_products_repo(self, created_at: DateTime, created_by: str,
                           updated_at: DateTime, updated_by: str,
@@ -102,7 +110,6 @@ class ProductRepo:
             query = query.limit(size).offset((page - 1) * size)
         rs = session.execute(query).fetchall()
         return rs
-
 
     def get_product_id(self, product_id: int) -> Row:
         session: Session = SessionLocal()
