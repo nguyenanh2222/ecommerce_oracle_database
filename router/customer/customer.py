@@ -2,7 +2,6 @@ from fastapi import APIRouter, Body
 from starlette import status
 
 from project.schemas import DataResponse
-from repo.customer import CustomerRepo
 from router.examples.customer import customer_op1
 from schema import CustomerRes, CustomerReq, UserReq
 from service.customer.customer import CustomerService
@@ -13,8 +12,9 @@ router = APIRouter()
     response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
-def insert_customer(customer: CustomerReq = Body(..., examples=customer_op1)) -> DataResponse:
-        customer = CustomerService().insert_customer_service(customer=CustomerReq(
+def insert_customer(customer: CustomerReq = Body(
+    ..., examples=customer_op1)) -> DataResponse:
+    customer = CustomerService().insert_customer_service(customer=CustomerReq(
             created_at=customer.created_at,
             created_by=customer.created_by,
             updated_at=customer.updated_at,
@@ -39,7 +39,7 @@ def insert_customer(customer: CustomerReq = Body(..., examples=customer_op1)) ->
                 lastname=customer.user.lastname
             )
         ))
-        return DataResponse(data=customer)
+    return DataResponse(data=customer)
 
 @router.put(
     path="/",
@@ -75,7 +75,7 @@ def update_customer(username: str, customer: CustomerReq = Body(..., examples=cu
         return DataResponse(data=customer)
 
 @router.get(
-    path="/{username}",
+    path="/{id}",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )

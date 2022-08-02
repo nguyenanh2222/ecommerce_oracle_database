@@ -1,11 +1,7 @@
-# - Get list, get by id, change status order
-# Thông tin province_code, district_code, ward_code phải là code theo đơn vị hành chính VN
 from decimal import Decimal
 from dependency_injector.providers import List
-from sqlalchemy import DateTime
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
-
 from database import SessionLocal
 from model import Order
 from project.schemas import Sort

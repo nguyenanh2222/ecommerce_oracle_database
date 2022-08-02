@@ -62,7 +62,7 @@ class UserRoleRes(BaseModel):
     role_code: str = Field(None)
 
 
-class UserReq(BaseUtil):
+class UserReq(BaseModel):
     username: str = Field(None, autoincrement=True, nullable=True)
     password: str = Field(...)
     firstname: str = Field(...)
@@ -122,7 +122,6 @@ class CategoryReq(BaseModel):
 
 
 class CategoryRes(BaseModel):
-    id: int = Field(None)
     name: str = Field(None)
 
 
@@ -143,17 +142,16 @@ class SkuReq(BaseModel):
 class ProductReq(BaseUtil):
     name: str = Field(...)
     description: str = Field(...)
-    brand: str = Field(...)
+    brand: str = Field(default_factory="No Brand")
     category_id: int = Field(...)
     skus: List[SkuReq] = Field(...)
 
 
-class ProductRes(BaseUtil):
-    id: int = Field(None)
+class ProductRes(BaseModel):
     name: str = Field(None)
     description: str = Field(None)
-    brand: str = Field(None)
-    category_id: int = Field(None)
+    brand: str = Field("No Brand")
+    category: List[CategoryRes] = Field(None)
     quantity: int = Field(None)
     images: bytes = Field(None)
     color: str = Field(None)

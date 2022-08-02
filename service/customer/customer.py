@@ -7,7 +7,7 @@ from schema import CustomerReq, UserReq
 
 class CustomerService(CustomerRepo):
     def insert_customer_service(self, customer: CustomerReq):
-        customer = CustomerRepo().insert_customer(customer=CustomerReq(
+        customer = CustomerRepo().insert_customer_repo(customer=CustomerReq(
             created_at=customer.created_at,
             created_by=customer.created_by,
             updated_at=customer.updated_at,

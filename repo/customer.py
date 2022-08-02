@@ -7,11 +7,6 @@ from schema import CustomerReq
 
 
 class CustomerRepo():
-    # def get_customers(self) -> List[Row]:
-    #     session: Session = SessionLocal()
-    #     stmt = select(Customer)
-    #     rs = session.execute(stmt).fetchall()
-    #     return rs
 
     def get_customer_by_username_repo(self, username: str) -> Row:
         session: Session = SessionLocal()
@@ -19,7 +14,7 @@ class CustomerRepo():
         rs = session.execute(stmt).fetchone()
         return rs
 
-    def insert_customer(self, customer: CustomerReq):
+    def insert_customer_repo(self, customer: CustomerReq):
         session: Session = SessionLocal()
         stmt = insert(Customer).values(
             created_at=customer.created_at,
