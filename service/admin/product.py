@@ -12,7 +12,7 @@ from schema import ProductReq, SkuReq
 
 class ProductService(ProductRepo):
     def insert_product_service(self, product: ProductReq):
-        product = ProductRepo().insert_product_repo(ProductReq(
+        product_id = ProductRepo().insert_product_repo(ProductReq(
             created_at=product.created_at,
             created_by=product.created_by,
             updated_at=product.updated_at,
@@ -36,7 +36,6 @@ class ProductService(ProductRepo):
                          package_height=product.skus[0].package_height,
                          package_length=product.skus[0].package_length,
                          package_weight=product.skus[0].package_weight,
-
                          )]))
         return product
 
@@ -107,8 +106,7 @@ class ProductService(ProductRepo):
         product = ProductRepo().delete_product_repo(product_id=product_id)
         return product
 
-    def create_upload_file_service(self, file: UploadFile):
-        product = ProductRepo().create_upload_file_repo(file=file)
+
 
 
 

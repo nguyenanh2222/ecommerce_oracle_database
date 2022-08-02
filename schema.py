@@ -1,25 +1,24 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import List
-
 from pydantic import BaseModel, Field
-from pydantic.datetime_parse import date
-
-from model import Base
-from status import EOrderStatus
 
 
 class BaseUtil(BaseModel):
-    created_at: datetime = Field(default_factory=datetime.now)
-
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     created_by: str = Field(...)
-
-    updated_at: datetime = Field(default_factory=datetime.now)
-
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
     updated_by: str = Field(...)
 
     class Config:
         orm_mode = True
+
+
+class BaseUtilRes(BaseModel):
+    created_at: datetime = Field(None)
+    created_by: str = Field(None)
+    updated_at: datetime = Field(None)
+    updated_by: str = Field(None)
 
 
 class PermissionReq(BaseModel):
@@ -28,7 +27,7 @@ class PermissionReq(BaseModel):
 
 
 class PermissionRes(BaseModel):
-    code: str = Field(None)
+    # code: str = Field(None)
     name: str = Field(None)
 
 
@@ -48,7 +47,7 @@ class RoleReq(BaseModel):
 
 
 class RoleRes(BaseModel):
-    code: str = Field(None)
+    # code: str = Field(None)
     name: str = Field(None)
 
 
@@ -62,7 +61,7 @@ class UserRoleRes(BaseModel):
     role_code: str = Field(None)
 
 
-class UserReq(BaseModel):
+class UserReq(BaseUtil):
     username: str = Field(None, autoincrement=True, nullable=True)
     password: str = Field(...)
     firstname: str = Field(...)
@@ -70,11 +69,12 @@ class UserReq(BaseModel):
 
 
 
-class UserRes(BaseUtil):
+class UserRes(BaseUtilRes):
     username: str = Field(None, autoincrement=True, nullable=True)
     password: str = Field(None)
     firstname: str = Field(None)
     lastname: str = Field(None)
+    role_name: str = Field(None)
 
 
 class CustomerReq(BaseUtil):
@@ -83,7 +83,8 @@ class CustomerReq(BaseUtil):
     province_code: str = Field(...)
     district_code: str = Field(...)
     ward_code: str = Field(...)
-    user: UserReq = Field(...)
+    username: str = Field(...)
+    # user: UserReq = Field(...)
 
 
 class CustomerRes(BaseModel):

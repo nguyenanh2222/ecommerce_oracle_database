@@ -60,7 +60,7 @@ class OrderRepo():
 
     def insert_order(self, order: Order):
         session: Session = SessionLocal()
-        session.add(Order(
+        order = Order(
             created_at=order.created_at,
             created_by=order.created_by,
             updated_by=order.updated_by,
@@ -77,10 +77,10 @@ class OrderRepo():
             customer_username=order.customer_username,
             status=order.status,
             district_code_shipping=order.district_code_shipping
-    ))
+        )
+        session.add(order)
         session.commit()
-        order = session.get(Order, order.id)
-        return order
+        return order.id
 
     def change_order_status_repo(self, order_id: int, next_status: EOrderStatus) -> Row:
         session: Session = SessionLocal()
@@ -88,5 +88,3 @@ class OrderRepo():
         session.commit()
         rs = session.get(Order, order_id)
         return rs
-
-

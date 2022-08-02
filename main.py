@@ -9,11 +9,11 @@ from starlette.middleware.cors import CORSMiddleware
 
 from database import username, password, host, port, database
 from model import *
-from router.user import router as router_user
+from router.permisstion.user import router as router_user
 from router.admin.product import router as router_admin_product
 from router.admin.order import router as router_admin_order
 from router.customer.customer import router as router_customer
-from files.file import router as router_admin_file
+from router.admin.file import router as router_admin_file
 from status import EOrderStatus
 
 app = FastAPI(
@@ -40,12 +40,12 @@ class Tags(str, Enum):
     user = "[User]"
 
 
-app.include_router(router_user, prefix="/user", tags=[Tags.user])
-app.include_router(router_admin_product, prefix="/product", tags=[Tags.admin])
-app.include_router(router_admin_order, prefix="/order", tags=[Tags.admin])
-app.include_router(router_customer, prefix="/customer", tags=[Tags.customer])
-app.include_router(router_customer, prefix="/customer", tags=[Tags.customer])
-app.include_router(router_admin_file, prefix="/file", tags=[Tags.admin])
+app.include_router(router_user, prefix="/users", tags=[Tags.user])
+app.include_router(router_admin_product, prefix="/products", tags=[Tags.admin])
+app.include_router(router_admin_order, prefix="/orders", tags=[Tags.admin])
+app.include_router(router_customer, prefix="/customers", tags=[Tags.customer])
+app.include_router(router_customer, prefix="/customers", tags=[Tags.customer])
+app.include_router(router_admin_file, prefix="/files", tags=[Tags.admin])
 
 tables = ("ORDER_ITEM", "SKU", "PRODUCT", "CATEGORY", "TBL_ORDER", "CART_ITEM")
 

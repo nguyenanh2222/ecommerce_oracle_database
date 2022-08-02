@@ -11,3 +11,5 @@ class EOrderStatus(str, Enum):
 class ESkuStatus(str, Enum):
     ACTIVATED = "ACTIVATE"
     DISABLE = "DISABLE"
+
+

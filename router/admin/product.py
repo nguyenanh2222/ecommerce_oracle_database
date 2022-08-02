@@ -1,10 +1,6 @@
-import os
-
 from decimal import Decimal
-
 from starlette import status
 from fastapi import APIRouter, Query, Body, UploadFile, Path
-
 from project.schemas import DataResponse, Sort, PageResponse
 from router.examples.product import product_op1
 from schema import ProductRes, ProductReq, SkuReq
@@ -16,7 +12,7 @@ router = APIRouter()
 
 @router.post(
     path='/',
-    response_model=DataResponse[ProductRes],
+    response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
 def insert_product(product: ProductReq = Body(..., examples=product_op1)):
@@ -50,8 +46,8 @@ def insert_product(product: ProductReq = Body(..., examples=product_op1)):
 
 
 @router.put(
-    path='/',
-    response_model=DataResponse[ProductRes],
+    path='/{id}',
+    response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
 def update_product(product_id: int, product: ProductReq = Body(..., examples=product_op1)):

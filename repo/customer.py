@@ -16,34 +16,19 @@ class CustomerRepo():
 
     def insert_customer_repo(self, customer: CustomerReq):
         session: Session = SessionLocal()
-        stmt = insert(Customer).values(
-            created_at=customer.created_at,
-            created_by=customer.created_by,
-            updated_at=customer.updated_at,
-            updated_by=customer.updated_by,
-            username=customer.user.username,
-            password=customer.user.password,
-            firstname=customer.user.firstname,
-            lastname=customer.user.lastname,
-            phone=customer.phone,
-            address=customer.address,
-            province_code=customer.province_code,
-            district_code=customer.district_code,
-            ward_code=customer.ward_code
-        )
-        session.execute(stmt)
+        customer = Customer(username=customer.username,
+                            created_at=customer.created_at,
+                            created_by=customer.created_by,
+                            updated_at=customer.updated_at,
+                            updated_by=customer.updated_by,
+                            phone=customer.phone,
+                            address=customer.address,
+                            province_code=customer.province_code,
+                            district_code=customer.district_code,
+                            ward_code=customer.ward_code)
+        session.add(customer)
         session.commit()
-        stmt = insert(User).values(created_at=customer.created_at,
-                                   created_by=customer.created_by,
-                                   updated_at=customer.updated_at,
-                                   updated_by=customer.updated_by,
-                                   username=customer.user.username,
-                                   password=customer.user.password,
-                                   firstname=customer.user.firstname,
-                                   lastname=customer.user.lastname)
-        session.execute(stmt)
-        session.commit()
-        rs = session.get(Customer, customer.user.username)
+        rs = session.get(Customer, customer.username)
         return rs
 
     def update_customer_repo(self, customer: CustomerReq, username: str) -> Row:
@@ -52,27 +37,12 @@ class CustomerRepo():
                                        created_by=customer.created_by,
                                        updated_at=customer.updated_at,
                                        updated_by=customer.updated_by,
-                                       username=customer.user.username,
-                                       password=customer.user.password,
-                                       firstname=customer.user.firstname,
-                                       lastname=customer.user.lastname,
                                        phone=customer.phone,
                                        address=customer.address,
                                        province_code=customer.province_code,
                                        district_code=customer.district_code,
                                        ward_code=customer.ward_code
                                        ).where(Customer.username == username)
-        session.execute(stmt)
-        session.commit()
-        stmt = update(User).values(created_at=customer.created_at,
-                                   created_by=customer.created_by,
-                                   updated_at=customer.updated_at,
-                                   updated_by=customer.updated_by,
-                                   username=customer.user.username,
-                                   password=customer.user.password,
-                                   firstname=customer.user.firstname,
-                                   lastname=customer.user.lastname).where(
-            User.username == username)
         session.execute(stmt)
         session.commit()
         rs = session.get(Customer, username)
