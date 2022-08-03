@@ -7,3 +7,9 @@ class EOrderStatus(str, Enum):
     SHIPPING = 'SHIPPING'
     COMPLETED = 'COMPLETED'
 
+
+class ESkuStatus(str, Enum):
+    ACTIVATED = "ACTIVATE"
+    DISABLE = "DISABLE"
+
+

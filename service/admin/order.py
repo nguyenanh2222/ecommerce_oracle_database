@@ -1,4 +1,3 @@
-from datetime import datetime
 from decimal import Decimal
 import pandas as pd
 from fastapi import HTTPException
@@ -53,22 +52,19 @@ class OrderService(OrderRepo):
         return DataResponse(data=order)
 
     def insert_order_service(self, order: OrderReq):
-        data_district = pd.read_excel('./district_29_07.xls', dtype=str)['Mã']
-        data_province = pd.read_excel('./province_29_07.xls', dtype=str)['Mã']
-        data_ward = pd.read_excel('./ward_29_07.xls', dtype=str)['Mã']
-        province_code = '001'
-        ward_code = '002'
-        district_code = '003'
+        data_district = pd.read_excel("""/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/service/shipping_code/district_29_07.xls""", dtype=str)['Mã']
+        data_province = pd.read_excel("""/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/service/shipping_code/province_29_07.xls""", dtype=str)['Mã']
+        data_ward = pd.read_excel("""/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/service/shipping_code/ward_29_07.xls""", dtype=str)['Mã']
         for item in data_ward:
             if order.ward_code_shipping == item:
-                ward_code = item
+                order.ward_code_shipping = item
         for item in data_district:
             if order.district_code_shipping == item:
-                district_code = item
+                order.district_code_shipping = item
         for item in data_province:
             if order.province_code_shipping == item:
-                province_code = item
-        order = OrderRepo().insert_order(Order(
+                order.province_code_shipping = item
+        order_id = OrderRepo().insert_order(Order(
             created_at=order.created_at,
             created_by=order.created_by,
             updated_by=order.updated_by,
@@ -80,14 +76,17 @@ class OrderService(OrderRepo):
             name_shipping=order.name_shipping,
             phone_shipping=order.phone_shipping,
             address_shipping=order.address_shipping,
-            province_code_shipping=province_code,
-            ward_code_shipping=ward_code,
+            province_code_shipping=order.province_code_shipping,
+            ward_code_shipping=order.ward_code_shipping,
             customer_username=order.customer_username,
             status=order.status,
-            district_code_shipping=district_code
+            district_code_shipping=order.district_code_shipping
         ))
+        order = OrderRepo().get_order_by_id_repo(order_id)
         return order
 
     def change_order_status_service(self, order_id: int, next_status: EOrderStatus) -> DataResponse:
         order = OrderRepo().change_order_status_repo(order_id=order_id, next_status=next_status)
         return DataResponse(data=order)
+
+

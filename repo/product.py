@@ -6,7 +6,7 @@ from sqlalchemy import insert, select, update, DateTime, delete
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from model import Product, Sku
+from model import Product, Sku, Category
 from project.schemas import Sort
 from schema import ProductReq, SkuReq
 
@@ -87,28 +87,26 @@ class ProductRepo:
                           page: int, size: int,
                           sort_direction: Sort.Direction) -> List[Row]:
         session: Session = SessionLocal()
-        query = session.query(Product)
+        query = session.query(Product).join(Category).join(Sku)
         if name:
             query = query.filter(Product.name.like(f"%{name}%"))
         if category:
-            query = query.filter(Product.catrpory.like(f"%{name}%"))
-        if name:
-            query = query.filter(Product.name.like(f"%{name}%"))
+            query = query.filter(Category.name.like(f"%{category}%"))
         if color:
-            query = query.filter(Product.color.like(f"%{name}%"))
+            query = query.filter(Product.color.like(f"%{color}%"))
         if from_price:
             query = query.filter(Product.price == from_price)
         if to_price:
             query = query.filter(Product.price == to_price)
         if brand:
-            query = query.filter(Product.brand.like(f"%{name}%"))
+            query = query.filter(Product.brand.like(f"%{brand}%"))
         if sort_direction == 'asc':
             query = query.order_by(Product.created_time)
         if sort_direction == 'desc':
             query = query.order_by(Product.created_time).desc()
         if page and size:
             query = query.limit(size).offset((page - 1) * size)
-        rs = session.execute(query).fetchall()
+        rs = session.execute(query).all()
         return rs
 
     def get_product_id(self, product_id: int) -> Row:
@@ -126,8 +124,4 @@ class ProductRepo:
         session.execute(query)
         return session.get(Product, product_id)
 
-    def create_upload_file_repo(self, file: UploadFile):
-        session: Session = SessionLocal()
-        stmt = insert(Sku).values(images=file.filename)
-        session.execute(stmt)
-        session.commit()
+

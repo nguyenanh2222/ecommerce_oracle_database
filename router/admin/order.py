@@ -1,12 +1,9 @@
 from decimal import Decimal
 from fastapi.params import Query
-from pydantic.datetime_parse import datetime
 from starlette import status
 from fastapi import APIRouter, Body
-
-from model import Order
 from project.schemas import DataResponse, PageResponse, Sort
-from router.admin.examples.order import order_op1
+from router.examples.order import order_op1
 from schema import OrderReq
 from service.admin.order import OrderService
 from status import EOrderStatus
@@ -15,7 +12,7 @@ router = APIRouter()
 
 
 @router.get(
-    path="/orders",
+    path="/",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
@@ -67,11 +64,12 @@ def get_order_by_id(order_id: int) -> DataResponse:
 
 
 @router.post(
-    path="/order",
+    path="/",
     response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
-def insert_order(order: OrderReq = Body(..., examples=order_op1)):
+def insert_order(order: OrderReq = Body(
+    ..., examples=order_op1)):
     order = OrderService().insert_order_service(
         OrderReq(
             created_at=order.created_at,

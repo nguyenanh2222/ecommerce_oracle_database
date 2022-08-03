@@ -1,11 +1,7 @@
-# - Get list, get by id, change status order
-# Thông tin province_code, district_code, ward_code phải là code theo đơn vị hành chính VN
 from decimal import Decimal
 from dependency_injector.providers import List
-from sqlalchemy import DateTime
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
-
 from database import SessionLocal
 from model import Order
 from project.schemas import Sort
@@ -64,7 +60,7 @@ class OrderRepo():
 
     def insert_order(self, order: Order):
         session: Session = SessionLocal()
-        session.add(Order(
+        order = Order(
             created_at=order.created_at,
             created_by=order.created_by,
             updated_by=order.updated_by,
@@ -81,10 +77,10 @@ class OrderRepo():
             customer_username=order.customer_username,
             status=order.status,
             district_code_shipping=order.district_code_shipping
-    ))
+        )
+        session.add(order)
         session.commit()
-        order = session.get(Order, order.id)
-        return order
+        return order.id
 
     def change_order_status_repo(self, order_id: int, next_status: EOrderStatus) -> Row:
         session: Session = SessionLocal()
@@ -92,5 +88,3 @@ class OrderRepo():
         session.commit()
         rs = session.get(Order, order_id)
         return rs
-
-

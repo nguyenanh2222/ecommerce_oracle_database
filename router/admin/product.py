@@ -1,11 +1,6 @@
-import os
-
 from decimal import Decimal
-
 from starlette import status
-from fastapi import APIRouter, Query, Body, UploadFile
-
-
+from fastapi import APIRouter, Query, Body, UploadFile, Path
 from project.schemas import DataResponse, Sort, PageResponse
 from router.examples.product import product_op1
 from schema import ProductRes, ProductReq, SkuReq
@@ -16,8 +11,8 @@ router = APIRouter()
 
 
 @router.post(
-    path='/product',
-    response_model=DataResponse[ProductRes],
+    path='/',
+    response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
 def insert_product(product: ProductReq = Body(..., examples=product_op1)):
@@ -51,8 +46,8 @@ def insert_product(product: ProductReq = Body(..., examples=product_op1)):
 
 
 @router.put(
-    path='/product',
-    response_model=DataResponse[ProductRes],
+    path='/{id}',
+    response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
 def update_product(product_id: int, product: ProductReq = Body(..., examples=product_op1)):
@@ -86,20 +81,21 @@ def update_product(product_id: int, product: ProductReq = Body(..., examples=pro
 
 
 @router.get(
-    path="/products",
-    response_model=PageResponse,
+    path="/",
+    response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
 def get_products(
-                 name: str = Query("example product", description="Name"),
-                 category: str = Query(None, description="Category"),
-                 color: str = Query(None, description="Color"),
-                 from_price: Decimal = Query(None, description="Price"),
-                 to_price: Decimal = Query(None, description="Price"),
-                 brand: str = Query(None, description="Brand"),
-                 page: int = Query(1, description="Page"),
-                 size: int = Query(10, description="Size in a page"),
-                 sort_direction: Sort.Direction = Query(None)) -> PageResponse:
+                 name: str = Query(default=None, max_length=200, description="Name"),
+                 category: str = Query(default=None, max_length=200, description="Category"),
+                 color: str = Query(default=None, max_length=200, description="Color"),
+                 from_price: Decimal = Query(default=None, gt=0, description="Price"),
+                 to_price: Decimal = Query(default=None, gt=0, description="Price"),
+                 brand: str = Query(default=None, max_length=200, description="Brand"),
+                 page: int = Query(1,gt=0, description="Page"),
+                 size: int = Query(100,gt=0, description="Size in a page"),
+                 sort_direction: Sort.Direction = Query(None)
+) -> PageResponse:
     products = ProductService().get_products_service(
                                                      name=name,
                                                      category=category,
@@ -109,7 +105,8 @@ def get_products(
                                                      size=size,
                                                      from_price=from_price,
                                                      to_price=to_price,
-                                                     sort_direction=sort_direction)
+                                                     sort_direction=sort_direction
+    )
     return PageResponse(data=products.data,
                         total_page=products.total_page,
                         total_items=products.total_items,
@@ -117,7 +114,7 @@ def get_products(
 
 
 @router.get(
-    path="/{product_id}",
+    path="/{id}",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
@@ -127,7 +124,7 @@ def get_product_id(product_id: int) -> DataResponse:
 
 
 @router.delete(
-    path="/product",
+    path="/",
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_product(product_id: int):
@@ -136,18 +133,5 @@ def delete_product(product_id: int):
 
 
 
-@router.post(
-    path="/file/"
-)
-async def create_upload_file(file: UploadFile):
-    product = ProductService().create_upload_file_service(file=file)
-    try:
-        os.mkdir("../files")
-    except Exception as e:
-        print(e)
-    file_name = os.getcwd() + "/files/" + file.filename.replace(" ", "-")
-    with open(file_name, 'wb+') as f:
-        f.write(file.file.read())
-        f.close()
-    return {'file_name': file.filename}
+
 
