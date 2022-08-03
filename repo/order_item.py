@@ -7,7 +7,6 @@ from database import SessionLocal
 from model import OrderItem
 from schema import OrderItemReq
 
-
 class OrderItemRepo():
     def insert_order_item_repo(self, order_item: OrderItemReq, paid_price: Decimal):
         session: Session = SessionLocal()

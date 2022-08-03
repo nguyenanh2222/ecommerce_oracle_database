@@ -98,7 +98,6 @@ class CustomerRes(BaseModel):
     district_code: str = Field(None)
     ward_code: str = Field(None)
 
-
 class CartItemReq(BaseUtil):
     # id: int = Field(...)
     sku_id: int = Field(...)

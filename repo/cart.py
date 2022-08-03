@@ -44,6 +44,7 @@ class CartItemRepo():
         rs = session.get(CartItem, id)
         return rs
 
+
     def get_cart_items_repo(self, username: str) -> List[Row]:
         session: Session = SessionLocal()
         stmt = select(CartItem).where(CartItem.username == username)

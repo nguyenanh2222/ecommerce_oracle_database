@@ -34,6 +34,7 @@ class OrderServiceCus(OrderRepo):
             order_items.append(order_item)
         return order_items
 
+
     def insert_order_service(self, order: OrderReq):
         customer = CustomerRepo().get_customer_by_username_repo(username=order.customer_username)
         order_items = self.insert_order_item(username=order.customer_username)
