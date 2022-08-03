@@ -99,16 +99,16 @@ class CustomerRes(BaseModel):
     ward_code: str = Field(None)
 
 
-class CarItemReq(BaseUtil):
-    id: int = Field(...)
-    order_id: int = Field(...)
+class CartItemReq(BaseUtil):
+    # id: int = Field(...)
     sku_id: int = Field(...)
-    name: str = Field(...)
+    # name: str = Field(...)
     main_image: str = Field(...)
     item_price: Decimal = Field(...)
+    username: Decimal = Field(...)
 
 
-class CarItemRes(BaseUtil):
+class CartItemRes(BaseUtil):
     id: int = Field(None)
     order_id: int = Field(None)
     sku_id: int = Field(None)

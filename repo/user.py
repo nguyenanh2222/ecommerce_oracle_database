@@ -9,10 +9,6 @@ from database import SessionLocal
 from schema import UserReq
 
 
-
-
-
-
 class UserRepo:
     def insert_user_repo(self, user: UserReq) -> Row:
         session: Session = SessionLocal()
@@ -27,11 +23,6 @@ class UserRepo:
             lastname=user.lastname)
         session.add(user)
         session.commit()
-        # role = Role(name=role_name, code=role_code)
-        # session.add(role)
-        # user_role = UserRole(username=user.username, role_code=role_code)
-        # session.add(user_role)
-        # session.commit()
         rs = session.get(User, user.username)
         return rs
 
@@ -52,7 +43,6 @@ class UserRepo:
         rs = session.get(User, username)
         return rs
 
-
     def get_users(self) -> List[Row]:
         session: Session = SessionLocal()
         query = session.query(User)
@@ -63,7 +53,7 @@ class UserRepo:
         session: Session = SessionLocal()
         query = session.query(Role).join(UserRole).filter(
             UserRole.username == username
-        ).filter(Role.name==role_name)
+        ).filter(Role.name == role_name)
         rs = session.execute(query).fetchone()
         return rs
 
@@ -74,11 +64,12 @@ class UserRepo:
         list_permission = [permission['Permission'].name for permission in rs]
         return list_permission
 
-    def get_user_by_username_repo(self, username:str) -> Row:
+    def get_user_by_username_repo(self, username: str) -> Row:
         session: Session = SessionLocal()
-        query = session.query(User).filter(User.username==username)
+        query = session.query(User).filter(User.username == username)
         rs = session.execute(query).fetchone()
         return rs
+
     def delete_user_repo(self, username: str):
         session: Session = SessionLocal()
         query = delete(UserRole).where(UserRole.username == username)
@@ -87,4 +78,3 @@ class UserRepo:
         rs = session.execute(query)
         rs = session.get(User, username)
         return rs
-
