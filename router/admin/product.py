@@ -1,6 +1,8 @@
 from decimal import Decimal
 from starlette import status
 from fastapi import APIRouter, Query, Body, UploadFile, Path
+from starlette.responses import Response
+
 from project.schemas import DataResponse, Sort, PageResponse
 from router.examples.product import product_op1
 from schema import ProductRes, ProductReq, SkuReq
@@ -129,8 +131,7 @@ def get_product_id(product_id: int) -> DataResponse:
 )
 def delete_product(product_id: int):
     product = ProductService().delete_product_service(product_id=product_id)
-    return product
-
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 

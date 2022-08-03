@@ -5,16 +5,21 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from loguru import logger
 from sqlalchemy import create_engine, insert
+from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
-
 from database import username, password, host, port, database
 from model import *
+from router.permisstion.authentication import AuthenticationMiddlewareExtended
+from status import EOrderStatus
+
 from router.permisstion.user import router as router_user
 from router.admin.product import router as router_admin_product
 from router.admin.order import router as router_admin_order
-from router.customer.customer import router as router_customer
 from router.admin.file import router as router_admin_file
-from status import EOrderStatus
+
+from router.customer.customer import router as router_customer
+from router.customer.cart import router as router_customer_cart
+from router.customer.order import router as router_customer_order
 
 app = FastAPI(
     title="ecommerce",
@@ -33,6 +38,8 @@ app.add_middleware(
     allow_headers=["POST", "GET"],
 )
 
+app.add_middleware(AuthenticationMiddlewareExtended, backend=None)
+
 
 class Tags(str, Enum):
     customer = "[Customer]"
@@ -41,11 +48,14 @@ class Tags(str, Enum):
 
 
 app.include_router(router_user, prefix="/users", tags=[Tags.user])
+
 app.include_router(router_admin_product, prefix="/products", tags=[Tags.admin])
 app.include_router(router_admin_order, prefix="/orders", tags=[Tags.admin])
-app.include_router(router_customer, prefix="/customers", tags=[Tags.customer])
-app.include_router(router_customer, prefix="/customers", tags=[Tags.customer])
 app.include_router(router_admin_file, prefix="/files", tags=[Tags.admin])
+
+app.include_router(router_customer, prefix="/customers", tags=[Tags.customer])
+app.include_router(router_customer_cart, prefix="/customers/carts", tags=[Tags.customer])
+app.include_router(router_customer_order, prefix="/customers/orders", tags=[Tags.customer])
 
 tables = ("ORDER_ITEM", "SKU", "PRODUCT", "CATEGORY", "TBL_ORDER", "CART_ITEM")
 
@@ -96,7 +106,10 @@ async def startup():
     ))
     engine.execute(insert(Sku).values(
         product_id=1,
-        images=json.dumps([{"name": "bbi0.jpg"}])
+        images=json.dumps([{"name": "bbi0.jpg"}]),
+        color='red',
+        size_product='120*120',
+        name=' '
     ))
 
     engine.execute(insert(User).values(username='vietanh',
@@ -118,7 +131,7 @@ async def startup():
         permission_code='00E',
         role_code='001'))
 
-    engine.execute(insert(CarItem).values(name="nguyen"))
+    engine.execute(insert(CartItem).values(name="nguyen", username="vietanh"))
     engine.execute(insert(Order).values(status=EOrderStatus.CANCELLED))
     engine.execute(insert(OrderItem).values(shipping_fee=15_000))
 

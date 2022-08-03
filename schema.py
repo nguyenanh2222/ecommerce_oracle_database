@@ -98,17 +98,16 @@ class CustomerRes(BaseModel):
     district_code: str = Field(None)
     ward_code: str = Field(None)
 
-
-class CarItemReq(BaseUtil):
-    id: int = Field(...)
-    order_id: int = Field(...)
+class CartItemReq(BaseUtil):
+    # id: int = Field(...)
     sku_id: int = Field(...)
-    name: str = Field(...)
+    # name: str = Field(...)
     main_image: str = Field(...)
     item_price: Decimal = Field(...)
+    username: Decimal = Field(...)
 
 
-class CarItemRes(BaseUtil):
+class CartItemRes(BaseUtil):
     id: int = Field(None)
     order_id: int = Field(None)
     sku_id: int = Field(None)
@@ -177,20 +176,20 @@ class SkuRes(BaseUtil):
 
 class OrderReq(BaseUtil):
     # id: int = Field(...)
-    customer_name: str = Field(...)
+    # customer_name: str = Field(...)
     price: Decimal = Field(...)
-    # shipping_fee_original: Decimal = Field(...)
+    shipping_fee_original: Decimal = Field(...)
     payment_method: str = Field(...)
-    # shipping_fee_discount: Decimal = Field(...)
-    items_count: int = Field(...)
+    shipping_fee_discount: Decimal = Field(...)
+    # items_count: int = Field(...)
     name_shipping: str = Field(...)
     phone_shipping: str = Field(...)
-    address_shipping: str = Field(...)
-    province_code_shipping: str = Field(...)
-    district_code_shipping: str = Field(...)
-    ward_code_shipping: str = Field(...)
+    # address_shipping: str = Field(...)
+    # province_code_shipping: str = Field(...)
+    # district_code_shipping: str = Field(...)
+    # ward_code_shipping: str = Field(...)
     customer_username: str = Field(...)
-    status: str = Field(...)
+    # status: str = Field(...)
 
 
 class OrderRes(BaseUtil):
@@ -211,14 +210,15 @@ class OrderRes(BaseUtil):
 
 
 class OrderItemReq(BaseUtil):
-    id: int = Field(...)
+    # id: int = Field(...)
     order_id: int = Field(...)
-    sku_id: int = Field(...)
-    name: str = Field(...)
-    main_image: str = Field(...)
-    item_price: Decimal = Field(...)
-    paid_price: Decimal = Field(...)
+    # sku_id: int = Field(...)
+    # name: str = Field(...)
+    # main_image: str = Field(...)
+    # item_price: Decimal = Field(...)
+    # paid_price: Decimal = Field(...)
     shipping_fee: Decimal = Field(...)
+    item_discount: Decimal = Field(...)
 
 
 class OrderItemRes(BaseUtil):
