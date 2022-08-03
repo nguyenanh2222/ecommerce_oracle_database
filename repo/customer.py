@@ -50,5 +50,6 @@ class CustomerRepo():
 
     def delete_customer_repo(self, usermane: str):
         session: Session = SessionLocal()
-        stmt = delete(Customer).where(Customer.username == usermane).returning(Customer)
+        stmt = delete(Customer).where(Customer.username == usermane)
         session.execute(stmt)
+        session.commit()

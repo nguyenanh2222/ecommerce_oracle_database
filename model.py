@@ -78,7 +78,7 @@ class Customer(BaseUtil):
     ward_code = Column(VARCHAR2(50))
 
 
-class CarItem(BaseUtil):
+class CartItem(BaseUtil):
     __tablename__ = "cart_item"
 
     id = Column(Integer, primary_key=True)
@@ -86,6 +86,8 @@ class CarItem(BaseUtil):
     name = Column(VARCHAR2(200))
     main_image = Column(VARCHAR2(200))
     item_price = Column(NUMBER(22, 2))
+    username = Column(VARCHAR2(200))
+
 
 
 class Category(Base):
@@ -118,7 +120,8 @@ class Sku(BaseUtil):
     package_weight = Column(Integer)
     price = Column(NUMBER(22, 2))
     product_id = Column(Integer, ForeignKey("product.id"))
-    size_product = Column(VARCHAR2(10))
+    size_product = Column(VARCHAR2(200))
+    name = Column(VARCHAR2(200))
 
 
 class Order(BaseUtil):
@@ -149,4 +152,6 @@ class OrderItem(BaseUtil):
     main_image = Column(VARCHAR2(200))
     item_price = Column(NUMBER(22, 2))
     paid_price = Column(NUMBER(22, 2))
+    item_discount = Column(NUMBER(22, 2))
     shipping_fee = Column(NUMBER(22, 2))
+

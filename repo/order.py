@@ -58,7 +58,7 @@ class OrderRepo():
         query = session.query(Order).filter(Order.id == order_id)
         return session.execute(query).first()
 
-    def insert_order(self, order: Order):
+    def insert_order(self, order: Order, items_count: int):
         session: Session = SessionLocal()
         order = Order(
             created_at=order.created_at,
@@ -68,7 +68,7 @@ class OrderRepo():
             customer_name=order.customer_name,
             price=order.price,
             payment_method=order.payment_method,
-            items_count=order.items_count,
+            items_count=items_count,
             name_shipping=order.name_shipping,
             phone_shipping=order.phone_shipping,
             address_shipping=order.address_shipping,

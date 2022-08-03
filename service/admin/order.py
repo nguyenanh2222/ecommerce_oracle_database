@@ -10,7 +10,7 @@ from schema import OrderReq
 from status import EOrderStatus
 
 
-class OrderService(OrderRepo):
+class OrderServiceAd(OrderRepo):
     def get_order_service(self,
                           customer_name: str, from_price: Decimal, to_price: Decimal,
                           id: int, payment_method: str, name_shipping: str,
@@ -50,40 +50,6 @@ class OrderService(OrderRepo):
     def get_order_by_id_service(self, order_id: int) -> DataResponse:
         order = OrderRepo().get_order_by_id_repo(order_id=order_id)
         return DataResponse(data=order)
-
-    def insert_order_service(self, order: OrderReq):
-        data_district = pd.read_excel("""/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/service/shipping_code/district_29_07.xls""", dtype=str)['Mã']
-        data_province = pd.read_excel("""/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/service/shipping_code/province_29_07.xls""", dtype=str)['Mã']
-        data_ward = pd.read_excel("""/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/service/shipping_code/ward_29_07.xls""", dtype=str)['Mã']
-        for item in data_ward:
-            if order.ward_code_shipping == item:
-                order.ward_code_shipping = item
-        for item in data_district:
-            if order.district_code_shipping == item:
-                order.district_code_shipping = item
-        for item in data_province:
-            if order.province_code_shipping == item:
-                order.province_code_shipping = item
-        order_id = OrderRepo().insert_order(Order(
-            created_at=order.created_at,
-            created_by=order.created_by,
-            updated_by=order.updated_by,
-            updated_at=order.updated_at,
-            customer_name=order.customer_name,
-            price=order.price,
-            payment_method=order.payment_method,
-            items_count=order.items_count,
-            name_shipping=order.name_shipping,
-            phone_shipping=order.phone_shipping,
-            address_shipping=order.address_shipping,
-            province_code_shipping=order.province_code_shipping,
-            ward_code_shipping=order.ward_code_shipping,
-            customer_username=order.customer_username,
-            status=order.status,
-            district_code_shipping=order.district_code_shipping
-        ))
-        order = OrderRepo().get_order_by_id_repo(order_id)
-        return order
 
     def change_order_status_service(self, order_id: int, next_status: EOrderStatus) -> DataResponse:
         order = OrderRepo().change_order_status_repo(order_id=order_id, next_status=next_status)
