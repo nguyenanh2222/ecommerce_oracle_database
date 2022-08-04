@@ -49,16 +49,24 @@ class CartItemRepo():
         session: Session = SessionLocal()
         stmt = select(CartItem).where(CartItem.username == username)
         rs = session.execute(stmt).fetchall()
+        print(rs)
         return rs
 
-    def get_cart_item_by_id_repo(self, id: int) -> Row:
-        session: Session = SessionLocal()
-        return session.get(CartItem, id)
+    # def get_cart_item_by_id_repo(self, id: int) -> Row:
+    #     session: Session = SessionLocal()
+    #     return session.get(CartItem, id)
 
-    def delete_cart_item_repo(self, id: int):
+    def delete_cart_item_by_id_repo(self, id: int):
         session: Session = SessionLocal()
         stmt = delete(CartItem).where(CartItem.id == id)
         session.execute(stmt)
         session.commit()
         cart = session.get(CartItem, id)
         return cart
+
+    def delete_cart_item_by_uername_repo(self, username: str):
+        session: Session = SessionLocal()
+        stmt = delete(CartItem).where(CartItem.username == username)
+        session.execute(stmt)
+        session.commit()
+

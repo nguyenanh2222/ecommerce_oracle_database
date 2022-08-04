@@ -14,36 +14,41 @@ from schema import ProductReq, SkuReq
 class ProductRepo:
     def insert_product_repo(self, product: ProductReq) -> Row:
         session: Session = SessionLocal()
-        stmt = insert(Product).values(created_at=product.created_at,
-                                      created_by=product.created_by,
-                                      updated_at=product.updated_at,
-                                      updated_by=product.updated_by,
-                                      name=product.name,
-                                      description=product.description,
-                                      brand=product.brand,
-                                      category_id=product.category_id
-                                      )
-        session.execute(stmt)
+        _product = Product(
+            created_at=product.created_at,
+            created_by=product.created_by,
+            updated_at=product.updated_at,
+            updated_by=product.updated_by,
+            name=product.name,
+            description=product.description,
+            brand=product.brand,
+            category_id=product.category_id
+        )
+        session.add(_product)
         session.commit()
-        stmt = insert(Sku).values(created_at=product.created_at,
-                                  created_by=product.created_by,
-                                  updated_at=product.updated_at,
-                                  updated_by=product.updated_by,
-                                  quantity=product.skus[0].quantity,
-                                  images=product.skus[0].images,
-                                  color=product.skus[0].color,
-                                  price=product.skus[0].price,
-                                  size_product=product.skus[0].size_product,
-                                  status=product.skus[0].status,
-                                  seller_sku=product.skus[0].seller_sku,
-                                  package_width=product.skus[0].package_width,
-                                  package_height=product.skus[0].package_height,
-                                  package_length=product.skus[0].package_length,
-                                  package_weight=product.skus[0].package_weight,
-                                  )
-        rs = session.execute(stmt).fetchone()
+
+        package_weight = product.skus[0].package_width * product.skus[0].package_length * product.skus[0].package_height
+        sku = Sku(created_at=product.created_at,
+                  created_by=product.created_by,
+                  updated_at=product.updated_at,
+                  updated_by=product.updated_by,
+                  quantity=product.skus[0].quantity,
+                  images=product.skus[0].images,
+                  color=product.skus[0].color,
+                  price=product.skus[0].price,
+                  size_product=product.skus[0].size_product,
+                  status=product.skus[0].status,
+                  seller_sku=product.skus[0].seller_sku,
+                  package_width=product.skus[0].package_width,
+                  package_height=product.skus[0].package_height,
+                  package_length=product.skus[0].package_length,
+                  package_weight=package_weight,
+                  product_id=_product.id
+                  )
+        session.add(sku)
         session.commit()
-        return rs
+        product = session.get(Product, _product.id)
+        return product
 
     def update_product_repo(self, product_id: int, product: ProductReq) -> Row:
         session: Session = SessionLocal()
@@ -58,6 +63,9 @@ class ProductRepo:
                                       ).where(Product.id == product_id)
         session.execute(stmt)
         session.commit()
+
+        package_weight = product.skus[0].package_width * product.skus[0].package_length * product.skus[0].package_height
+
         stmt = update(Sku).values(created_at=product.created_at,
                                   created_by=product.created_by,
                                   updated_at=product.updated_at,
@@ -72,7 +80,7 @@ class ProductRepo:
                                   package_width=product.skus[0].package_width,
                                   package_height=product.skus[0].package_height,
                                   package_length=product.skus[0].package_length,
-                                  package_weight=product.skus[0].package_weight,
+                                  package_weight=package_weight,
                                   ).where(Sku.product_id == product_id)
         session.execute(stmt)
         session.commit()
@@ -123,6 +131,3 @@ class ProductRepo:
         query = delete(Product).where(Product.id == product_id)
         session.commit()
         session.execute(query)
-
-
-

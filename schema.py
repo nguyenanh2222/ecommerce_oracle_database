@@ -6,9 +6,9 @@ from pydantic import BaseModel, Field
 
 class BaseUtil(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    created_by: str = Field(...)
+    created_by: str = Field(None)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_by: str = Field(...)
+    updated_by: str = Field(None)
 
     class Config:
         orm_mode = True
@@ -68,7 +68,6 @@ class UserReq(BaseUtil):
     lastname: str = Field(...)
 
 
-
 class UserRes(BaseUtilRes):
     username: str = Field(None, autoincrement=True, nullable=True)
     password: str = Field(None)
@@ -98,13 +97,14 @@ class CustomerRes(BaseModel):
     district_code: str = Field(None)
     ward_code: str = Field(None)
 
+
 class CartItemReq(BaseUtil):
     # id: int = Field(...)
     sku_id: int = Field(...)
     # name: str = Field(...)
     main_image: str = Field(...)
     item_price: Decimal = Field(...)
-    username: Decimal = Field(...)
+    username: str = Field(...)
 
 
 class CartItemRes(BaseUtil):
@@ -134,7 +134,6 @@ class SkuReq(BaseModel):
     package_width: int = Field(...)
     package_height: int = Field(...)
     package_length: int = Field(...)
-    package_weight: int = Field(...)
     price: Decimal = Field(...)
     size_product: str = Field(...)
 
@@ -174,22 +173,22 @@ class SkuRes(BaseUtil):
     size: str = Field(None)
 
 
+class OrderItemReq(BaseUtil):
+    shipping_fee: Decimal = Field(...)
+    item_discount: Decimal = Field(...)
+    sku_id: int = Field(...)
+    name: str = Field(...)
+    main_image: bytes = Field(...)
+    item_price: Decimal = Field(...)
+    paid_price: Decimal = Field(...)
+
+
 class OrderReq(BaseUtil):
-    # id: int = Field(...)
-    # customer_name: str = Field(...)
-    price: Decimal = Field(...)
     shipping_fee_original: Decimal = Field(...)
     payment_method: str = Field(...)
     shipping_fee_discount: Decimal = Field(...)
-    # items_count: int = Field(...)
     name_shipping: str = Field(...)
-    phone_shipping: str = Field(...)
-    # address_shipping: str = Field(...)
-    # province_code_shipping: str = Field(...)
-    # district_code_shipping: str = Field(...)
-    # ward_code_shipping: str = Field(...)
     customer_username: str = Field(...)
-    # status: str = Field(...)
 
 
 class OrderRes(BaseUtil):
@@ -207,18 +206,6 @@ class OrderRes(BaseUtil):
     district_code_shipping: str = Field(None)
     ward_code_shipping: str = Field(None)
     customer_username: str = Field(None)
-
-
-class OrderItemReq(BaseUtil):
-    # id: int = Field(...)
-    order_id: int = Field(...)
-    # sku_id: int = Field(...)
-    # name: str = Field(...)
-    # main_image: str = Field(...)
-    # item_price: Decimal = Field(...)
-    # paid_price: Decimal = Field(...)
-    shipping_fee: Decimal = Field(...)
-    item_discount: Decimal = Field(...)
 
 
 class OrderItemRes(BaseUtil):
