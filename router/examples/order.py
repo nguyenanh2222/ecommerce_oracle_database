@@ -53,5 +53,6 @@ order_op3 = {"opt_3": {"value":
   "payment_method": "COD",
   "shipping_fee_discount": 0.3,
   "name_shipping": "string",
-  "customer_username": "vietanh"
+  "customer_username": "vietanh",
+  "discount": 0.2
 }}}

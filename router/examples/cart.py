@@ -6,6 +6,6 @@ cart_opt1 = {
   "sku_id": 1,
   "main_image": "string",
   "item_price": 500_000,
-  "username": "vietanh"
+  "username": "vietanh",
 }
 

@@ -128,6 +128,7 @@ class Order(BaseUtil):
     id = Column(Integer, primary_key=True)
     customer_name = Column(VARCHAR2(200))
     price = Column(NUMBER(22, 2))
+    discount = Column(NUMBER(22, 2))
     shipping_fee_original = Column(NUMBER(22, 2))
     payment_method = Column(VARCHAR2(100))
     shipping_fee_discount = Column(NUMBER(22, 2))

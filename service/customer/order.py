@@ -1,11 +1,11 @@
 from datetime import datetime
+from decimal import Decimal
 from typing import List
-
 from fastapi import HTTPException
 from sqlalchemy.engine import Row
 from starlette import status
-
 from model import Order, OrderItem
+from project.schemas import Sort, PageResponse
 from repo.cart import CartItemRepo
 from repo.customer import CustomerRepo
 from repo.order import OrderRepo
@@ -60,13 +60,14 @@ class OrderServiceCus(OrderRepo):
             items_count += 1
             shipping_fee += order_item['OrderItem'].shipping_fee
 
-        price = price + shipping_fee*order.shipping_fee_discount
+        price = price - price * order.discount + shipping_fee * order.shipping_fee_discount
 
         order_id = OrderRepo().insert_order(Order(
             created_at=order.created_at,
             created_by=order.created_by,
             updated_by=order.updated_by,
             updated_at=order.updated_at,
+            discount=order.discount,
             shipping_fee_original=shipping_fee,
             shipping_fee_discount=order.shipping_fee_discount,
             payment_method=order.payment_method,
@@ -79,7 +80,7 @@ class OrderServiceCus(OrderRepo):
             province_code_shipping=customer['Customer'].province_code,
             ward_code_shipping=customer['Customer'].ward_code,
             customer_username=customer['Customer'].username,
-            district_code_shipping=customer['Customer'].district_code
+            district_code_shipping=customer['Customer'].district_code,
         ),
             items_count=items_count,
         )
@@ -91,3 +92,35 @@ class OrderServiceCus(OrderRepo):
         cart_item = CartItemRepo().delete_cart_item_by_uername_repo(username=order['Order'].customer_username)
 
         return order
+
+    def get_orders_repo_cus(self,
+                            from_price: Decimal, to_price: Decimal,
+                            payment_method: str, name_shipping: str,
+                            phone_shipping: str, address_shipping: str,
+                            province_code_shipping: str, ward_code_shipping: str,
+                            district_code_shipping: str,
+                            sort_direction: Sort.Direction,
+                            page: int, size: int):
+        orders = OrderRepo().get_orders_repo_cus(
+            from_price=from_price,
+            to_price=to_price,
+            payment_method=payment_method,
+            name_shipping=name_shipping,
+            phone_shipping=phone_shipping,
+            address_shipping=address_shipping,
+            province_code_shipping=province_code_shipping,
+            ward_code_shipping=ward_code_shipping,
+            district_code_shipping=district_code_shipping,
+            sort_direction=sort_direction,
+            page=page, size=size)
+
+        total_page = len(orders) / size
+        current_page = page
+        total_item = len(orders)
+        if page and size is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+        return PageResponse(data=orders,
+                            total_item=total_item,
+                            total_page=total_page,
+                            current_page=current_page)

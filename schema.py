@@ -186,8 +186,10 @@ class OrderItemReq(BaseUtil):
 class OrderReq(BaseUtil):
     payment_method: str = Field(...)
     shipping_fee_discount: Decimal = Field(...)
+    discount: Decimal = Field(...)
     name_shipping: str = Field(...)
     customer_username: str = Field(...)
+
 
 
 class OrderRes(BaseUtil):

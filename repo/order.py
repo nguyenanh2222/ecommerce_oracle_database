@@ -9,15 +9,15 @@ from status import EOrderStatus
 
 
 class OrderRepo():
-    def get_orders_repo(self,
-                        customer_name: str, from_price: Decimal, to_price: Decimal,
-                        id: int, payment_method: str, name_shipping: str,
-                        phone_shipping: str, address_shipping: str,
-                        province_code_shipping: str, ward_code_shipping: str,
-                        district_code_shipping: str,
-                        customer_username: str,
-                        sort_direction: Sort.Direction,
-                        page: int, size: int) -> List[Row]:
+    def get_orders_repo_ad(self,
+                           customer_name: str, from_price: Decimal, to_price: Decimal,
+                           id: int, payment_method: str, name_shipping: str,
+                           phone_shipping: str, address_shipping: str,
+                           province_code_shipping: str, ward_code_shipping: str,
+                           district_code_shipping: str,
+                           customer_username: str,
+                           sort_direction: Sort.Direction,
+                           page: int, size: int) -> List[Row]:
         session: Session = SessionLocal()
         query = session.query(Order)
         if customer_name:
@@ -30,6 +30,43 @@ class OrderRepo():
             query = query.filter(Order.id == id)
         if customer_username:
             query = query.filter(Order.customer_username.like(f"%{customer_username}%"))
+        if payment_method:
+            query = query.filter(Order.payment_method.like(f"%{payment_method}%"))
+        if phone_shipping:
+            query = query.filter(Order.name_shipping.like(f"%{phone_shipping}%"))
+        if name_shipping:
+            query = query.filter(Order.name_shipping.like(f"%{name_shipping}%"))
+        if address_shipping:
+            query = query.filter(Order.address_shipping.like(f"%{address_shipping}%"))
+        if province_code_shipping:
+            query = query.filter(Order.province_code_shipping.like(f"%{province_code_shipping}%"))
+        if district_code_shipping:
+            query = query.filter(Order.district_code_shipping.like(f"%{district_code_shipping}%"))
+        if ward_code_shipping:
+            query = query.filter(Order.ward_code_shipping.like(f"%{ward_code_shipping}%"))
+        if sort_direction == 'asc':
+            query = query.order_by(Order.created_time)
+        if sort_direction == 'desc':
+            query = query.order_by(Order.created_time).desc()
+        if page and size:
+            query = query.limit(size).offset((page - 1) * size)
+        rs = session.execute(query).fetchall()
+        return rs
+
+    def get_orders_repo_cus(self,
+                            from_price: Decimal, to_price: Decimal,
+                            payment_method: str, name_shipping: str,
+                            phone_shipping: str, address_shipping: str,
+                            province_code_shipping: str, ward_code_shipping: str,
+                            district_code_shipping: str,
+                            sort_direction: Sort.Direction,
+                            page: int, size: int) -> List[Row]:
+        session: Session = SessionLocal()
+        query = session.query(Order)
+        if from_price:
+            query = query.filter(Order.price == from_price)
+        if to_price:
+            query = query.filter(Order.price == to_price)
         if payment_method:
             query = query.filter(Order.payment_method.like(f"%{payment_method}%"))
         if phone_shipping:
@@ -78,7 +115,8 @@ class OrderRepo():
             status=order.status,
             district_code_shipping=order.district_code_shipping,
             shipping_fee_original=order.shipping_fee_original,
-            shipping_fee_discount=order.shipping_fee_discount
+            shipping_fee_discount=order.shipping_fee_discount,
+            discount=order.discount
         )
         session.add(order)
         session.commit()
