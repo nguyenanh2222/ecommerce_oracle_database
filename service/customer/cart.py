@@ -36,9 +36,10 @@ class CartItemService(CartItemRepo):
                                  cart_item: CartItemReq,
                                  id: int):
         sku = SkuRepo().get_sku_by_id_repo(cart_item.sku_id)
-        product = ProductRepo().get_product_id(sku['Sku'].product_id)
+        product = ProductRepo().get_product_id(cart_item.sku_id)
         if sku == None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
         is_cart_item = CartItemRepo().get_cart_item_by_id_repo(id=id)
         if is_cart_item == None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

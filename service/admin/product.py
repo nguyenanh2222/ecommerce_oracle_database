@@ -10,7 +10,7 @@ from repo.product import ProductRepo
 from schema import ProductReq, SkuReq
 
 
-class ProductService(ProductRepo):
+class ProductServiceAd(ProductRepo):
     def insert_product_service(self, product: ProductReq):
         product = ProductRepo().insert_product_repo(ProductReq(
             created_at=product.created_at,

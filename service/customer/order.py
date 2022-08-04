@@ -42,6 +42,8 @@ class OrderServiceCus(OrderRepo):
 
     def insert_order_service(self, order: OrderReq) -> Row:
         cart_items = CartItemRepo().get_cart_items_repo(username=order.customer_username)
+        if cart_items == []:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         customer = CustomerRepo().get_customer_by_username_repo(
             username=order.customer_username)
         if customer == None:
@@ -86,41 +88,56 @@ class OrderServiceCus(OrderRepo):
         )
         cart_items = CartItemRepo().get_cart_items_repo(username=order.customer_username)
         for cart_item in cart_items:
-            order_item = OrderItemRepo().update_order_item_by_sku_id(sku_id=cart_item['CartItem'].sku_id,
-                                                                     order_id=order_id)
+            _order_item = OrderItemRepo().update_order_item_by_sku_id(order_id=order_id)
+
         order = OrderRepo().get_order_by_id_repo(order_id=order_id)
-        cart_item = CartItemRepo().delete_cart_item_by_uername_repo(username=order['Order'].customer_username)
+
+        _cart_item = CartItemRepo().delete_cart_item_by_username_repo(username=order['Order'].customer_username)
 
         return order
 
-    def get_orders_repo_cus(self,
-                            from_price: Decimal, to_price: Decimal,
-                            payment_method: str, name_shipping: str,
-                            phone_shipping: str, address_shipping: str,
-                            province_code_shipping: str, ward_code_shipping: str,
-                            district_code_shipping: str,
-                            sort_direction: Sort.Direction,
-                            page: int, size: int):
-        orders = OrderRepo().get_orders_repo_cus(
-            from_price=from_price,
-            to_price=to_price,
-            payment_method=payment_method,
-            name_shipping=name_shipping,
-            phone_shipping=phone_shipping,
-            address_shipping=address_shipping,
-            province_code_shipping=province_code_shipping,
-            ward_code_shipping=ward_code_shipping,
-            district_code_shipping=district_code_shipping,
-            sort_direction=sort_direction,
-            page=page, size=size)
-
+    def get_orders_cus_service(self,
+                               from_price: Decimal,
+                               to_price: Decimal,
+                               payment_method: str,
+                               name_shipping: str,
+                               phone_shipping: str,
+                               address_shipping: str,
+                               province_code_shipping: str,
+                               ward_code_shipping: str,
+                               district_code_shipping: str,
+                               customer_username: str,
+                               sort_direction: str,
+                               page: int,
+                               size: int
+                               ):
+        orders = OrderRepo().get_orders_cus_repo(from_price=from_price,
+                                                 to_price=to_price,
+                                                 payment_method=payment_method,
+                                                 name_shipping=name_shipping,
+                                                 phone_shipping=phone_shipping,
+                                                 address_shipping=address_shipping,
+                                                 province_code_shipping=province_code_shipping,
+                                                 ward_code_shipping=ward_code_shipping,
+                                                 district_code_shipping=district_code_shipping,
+                                                 customer_username=customer_username,
+                                                 sort_direction=sort_direction,
+                                                 page=page,
+                                                 size=size
+                                                 )
         total_page = len(orders) / size
         current_page = page
-        total_item = len(orders)
+        total_items = len(orders)
+
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-        return PageResponse(data=orders,
-                            total_item=total_item,
+        data = [{'order': order,
+                 'order_items': OrderItemRepo().get_order_items(order_id=order['Order'].id)
+                 } for order in orders]
+
+        return PageResponse(data=data,
+                            total_items=total_items,
                             total_page=total_page,
                             current_page=current_page)
+

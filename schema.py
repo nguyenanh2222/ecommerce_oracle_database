@@ -83,7 +83,9 @@ class CustomerReq(BaseUtil):
     district_code: str = Field(...)
     ward_code: str = Field(...)
     username: str = Field(...)
-    # user: UserReq = Field(...)
+    password: str = Field(...)
+    firstname: str = Field(...)
+    lastname: str = Field(...)
 
 
 class CustomerRes(BaseModel):
@@ -189,7 +191,6 @@ class OrderReq(BaseUtil):
     discount: Decimal = Field(...)
     name_shipping: str = Field(...)
     customer_username: str = Field(...)
-
 
 
 class OrderRes(BaseUtil):

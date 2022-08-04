@@ -8,7 +8,6 @@ from database import SessionLocal
 from model import OrderItem, Order, Sku
 
 
-
 class OrderItemRepo():
     def insert_order_item_repo(self, order_item: OrderItem):
         session: Session = SessionLocal()
@@ -27,9 +26,19 @@ class OrderItemRepo():
         session.commit()
         return order_item
 
-    def get_order_items(self, order_id: str) -> List[Row]:
+    def get_order_items(self, order_id: int) -> List[Row]:
         session: Session = SessionLocal()
-        query = session.query(OrderItem).filter(OrderItem.order_id == order_id)
+        query = session.query(OrderItem.id,
+                              OrderItem.updated_by,
+                              OrderItem.updated_at,
+                              OrderItem.created_by,
+                              OrderItem.created_at,
+                              OrderItem.name,
+                              OrderItem.item_price,
+                              OrderItem.sku_id,
+                              OrderItem.main_image,
+                              OrderItem.shipping_fee).filter(
+            OrderItem.order_id == order_id)
         rs = session.execute(query).fetchall()
         return rs
 
@@ -39,14 +48,10 @@ class OrderItemRepo():
         rs = session.execute(query).fetchone()
         return rs
 
-    def update_order_item_by_sku_id(self, order_id: int, sku_id: int):
+    def update_order_item_by_sku_id(self, order_id: int):
         session: Session = SessionLocal()
         stmt = update(OrderItem).values(order_id=order_id).where(
-         OrderItem.sku_id == sku_id).returning(OrderItem.order_id)
+            OrderItem.order_id == None).returning(OrderItem.order_id)
         rs = session.execute(stmt).fetchone()
         session.commit()
         return rs
-
-
-
-
