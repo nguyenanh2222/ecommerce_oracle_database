@@ -19,7 +19,6 @@ product_op1 = {"opt_1": {"value": {
             "package_width": 15,
             "package_height": 15,
             "package_length": 15,
-            "package_weight": 15,
             "price": 156_000,
             "size_product": "150"
         }

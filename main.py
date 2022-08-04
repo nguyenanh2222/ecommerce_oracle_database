@@ -105,7 +105,11 @@ async def startup():
         images=json.dumps([{"name": "bbi0.jpg"}]),
         color='red',
         size_product='120*120',
-        name=' '
+        package_width=3,
+        package_height=4,
+        package_length=5,
+        package_weight=60,
+        quantity=100
     ))
 
     engine.execute(insert(User).values(username='vietanh',
@@ -127,7 +131,12 @@ async def startup():
         permission_code='00E',
         role_code='001'))
 
-    engine.execute(insert(CartItem).values(name="nguyen", username="vietanh"))
+    engine.execute(insert(CartItem).values(
+        name="nguyen",
+        username="vietanh",
+        sku_id=1,
+        item_price=200_000,
+        ))
     engine.execute(insert(Order).values(status=EOrderStatus.CANCELLED))
     engine.execute(insert(OrderItem).values(shipping_fee=15_000))
 

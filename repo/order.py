@@ -76,7 +76,9 @@ class OrderRepo():
             ward_code_shipping=order.ward_code_shipping,
             customer_username=order.customer_username,
             status=order.status,
-            district_code_shipping=order.district_code_shipping
+            district_code_shipping=order.district_code_shipping,
+            shipping_fee_original=order.shipping_fee_original,
+            shipping_fee_discount=order.shipping_fee_discount
         )
         session.add(order)
         session.commit()

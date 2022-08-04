@@ -18,6 +18,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED
 )
 def insert_product(product: ProductReq = Body(..., examples=product_op1)):
+
     product = ProductService().insert_product_service(ProductReq(
         name=product.name,
         description=product.description,
@@ -41,8 +42,7 @@ def insert_product(product: ProductReq = Body(..., examples=product_op1)):
                      package_width=product.skus[0].package_width,
                      package_height=product.skus[0].package_height,
                      package_length=product.skus[0].package_length,
-                     package_weight=product.skus[0].package_weight,
-
+                     package_weight=product.skus[0].package_width*product.skus[0].package_height*product.skus[0].package_length,
                      )]))
     return DataResponse(data=product)
 
