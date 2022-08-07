@@ -26,8 +26,9 @@ class CartItemRepo():
         rs = session.get(CartItem, cart_item.id)
         return rs
 
+
     def update_cart_item_repo(self,
-                              cart_item: CartItemReq,name: str, id: int) -> Row:
+                              cart_item: CartItemReq, name: str, id: int) -> Row:
         session: Session = SessionLocal()
         stmt = update(CartItem).values(created_at=cart_item.created_at,
                                        created_by=cart_item.created_by,
@@ -44,21 +45,36 @@ class CartItemRepo():
         rs = session.get(CartItem, id)
         return rs
 
-
     def get_cart_items_repo(self, username: str) -> List[Row]:
         session: Session = SessionLocal()
         stmt = select(CartItem).where(CartItem.username == username)
-        rs = session.execute(stmt).fetchall()
-        return rs
+        return session.execute(stmt).fetchall()
 
-    def get_cart_item_by_id_repo(self, id: int) -> Row:
-        session: Session = SessionLocal()
-        return session.get(CartItem, id)
-
-    def delete_cart_item_repo(self, id: int):
+    def delete_cart_item_by_id_repo(self, id: int):
         session: Session = SessionLocal()
         stmt = delete(CartItem).where(CartItem.id == id)
         session.execute(stmt)
         session.commit()
         cart = session.get(CartItem, id)
         return cart
+
+    def delete_cart_item_by_username_repo(self, username: str):
+        session: Session = SessionLocal()
+        stmt = delete(CartItem).where(CartItem.username == username)
+        session.execute(stmt)
+        session.commit()
+
+    def get_cart_item_by_id_repo(self, id: int):
+        session: Session = SessionLocal()
+        stmt = select(CartItem).where(CartItem.id == id)
+        session.execute(stmt)
+        session.commit()
+        cart = session.get(CartItem, id)
+        return cart
+
+    def delete_cart_item_repo(self, id: int):
+        session: Session = SessionLocal()
+        stmt = delete(CartItem).where(CartItem.id == id)
+        session.execute(stmt)
+        session.commit()
+

@@ -6,7 +6,7 @@ from starlette.responses import Response
 from project.schemas import DataResponse, Sort, PageResponse
 from router.examples.product import product_op1
 from schema import ProductRes, ProductReq, SkuReq
-from service.admin.product import ProductService
+from service.admin.product import ProductServiceAd
 
 
 router = APIRouter()
@@ -18,7 +18,8 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED
 )
 def insert_product(product: ProductReq = Body(..., examples=product_op1)):
-    product = ProductService().insert_product_service(ProductReq(
+
+    product = ProductServiceAd().insert_product_service(ProductReq(
         name=product.name,
         description=product.description,
         brand=product.brand,
@@ -41,8 +42,7 @@ def insert_product(product: ProductReq = Body(..., examples=product_op1)):
                      package_width=product.skus[0].package_width,
                      package_height=product.skus[0].package_height,
                      package_length=product.skus[0].package_length,
-                     package_weight=product.skus[0].package_weight,
-
+                     package_weight=product.skus[0].package_width*product.skus[0].package_height*product.skus[0].package_length,
                      )]))
     return DataResponse(data=product)
 
@@ -53,7 +53,7 @@ def insert_product(product: ProductReq = Body(..., examples=product_op1)):
     status_code=status.HTTP_200_OK
 )
 def update_product(product_id: int, product: ProductReq = Body(..., examples=product_op1)):
-    product = ProductService().update_product_service(product_id=product_id,
+    product = ProductServiceAd().update_product_service(product_id=product_id,
                                                       product=ProductReq(
                                                           created_at=product.created_at,
                                                           created_by=product.created_by,
@@ -77,14 +77,13 @@ def update_product(product_id: int, product: ProductReq = Body(..., examples=pro
                                                                        package_width=product.skus[0].package_width,
                                                                        package_height=product.skus[0].package_height,
                                                                        package_length=product.skus[0].package_length,
-                                                                       package_weight=product.skus[0].package_weight
                                                                        )]))
     return DataResponse(data=product)
 
 
 @router.get(
     path="/",
-    response_model=DataResponse,
+    response_model=PageResponse,
     status_code=status.HTTP_200_OK
 )
 def get_products(
@@ -98,7 +97,7 @@ def get_products(
                  size: int = Query(100,gt=0, description="Size in a page"),
                  sort_direction: Sort.Direction = Query(None)
 ) -> PageResponse:
-    products = ProductService().get_products_service(
+    products = ProductServiceAd().get_products_service(
                                                      name=name,
                                                      category=category,
                                                      color=color,
@@ -121,7 +120,7 @@ def get_products(
     status_code=status.HTTP_200_OK
 )
 def get_product_id(product_id: int) -> DataResponse:
-    product = ProductService().get_product_id_service(product_id=product_id)
+    product = ProductServiceAd().get_product_id_service(product_id=product_id)
     return DataResponse(data=product)
 
 
@@ -130,7 +129,7 @@ def get_product_id(product_id: int) -> DataResponse:
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_product(product_id: int):
-    product = ProductService().delete_product_service(product_id=product_id)
+    _product = ProductServiceAd().delete_product_service(product_id=product_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

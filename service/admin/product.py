@@ -10,9 +10,9 @@ from repo.product import ProductRepo
 from schema import ProductReq, SkuReq
 
 
-class ProductService(ProductRepo):
+class ProductServiceAd(ProductRepo):
     def insert_product_service(self, product: ProductReq):
-        product_id = ProductRepo().insert_product_repo(ProductReq(
+        product = ProductRepo().insert_product_repo(ProductReq(
             created_at=product.created_at,
             created_by=product.created_by,
             updated_at=product.updated_at,
@@ -35,7 +35,6 @@ class ProductService(ProductRepo):
                          package_width=product.skus[0].package_width,
                          package_height=product.skus[0].package_height,
                          package_length=product.skus[0].package_length,
-                         package_weight=product.skus[0].package_weight,
                          )]))
         return product
 
@@ -64,7 +63,6 @@ class ProductService(ProductRepo):
                                                                      package_width=product.skus[0].package_width,
                                                                      package_height=product.skus[0].package_height,
                                                                      package_length=product.skus[0].package_length,
-                                                                     package_weight=product.skus[0].package_weight
                                                                      )]))
         return product
 

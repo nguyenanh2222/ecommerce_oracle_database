@@ -2,11 +2,14 @@ from decimal import Decimal
 from typing import List
 
 from fastapi import UploadFile
-from sqlalchemy import insert, select, update, DateTime, delete
+from sqlalchemy import insert, select, update, DateTime, delete, Table, Column, Integer, create_engine, \
+    ForeignKeyConstraint, column
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
-from database import SessionLocal
-from model import Product, Sku, Category
+from sqlalchemy.sql.ddl import DropConstraint
+
+from database import SessionLocal, username, password, host, port, database
+from model import Product, Sku, Category, OrderItem
 from project.schemas import Sort
 from schema import ProductReq, SkuReq
 
@@ -14,36 +17,41 @@ from schema import ProductReq, SkuReq
 class ProductRepo:
     def insert_product_repo(self, product: ProductReq) -> Row:
         session: Session = SessionLocal()
-        stmt = insert(Product).values(created_at=product.created_at,
-                                      created_by=product.created_by,
-                                      updated_at=product.updated_at,
-                                      updated_by=product.updated_by,
-                                      name=product.name,
-                                      description=product.description,
-                                      brand=product.brand,
-                                      category_id=product.category_id
-                                      )
-        session.execute(stmt)
+        _product = Product(
+            created_at=product.created_at,
+            created_by=product.created_by,
+            updated_at=product.updated_at,
+            updated_by=product.updated_by,
+            name=product.name,
+            description=product.description,
+            brand=product.brand,
+            category_id=product.category_id
+        )
+        session.add(_product)
         session.commit()
-        stmt = insert(Sku).values(created_at=product.created_at,
-                                  created_by=product.created_by,
-                                  updated_at=product.updated_at,
-                                  updated_by=product.updated_by,
-                                  quantity=product.skus[0].quantity,
-                                  images=product.skus[0].images,
-                                  color=product.skus[0].color,
-                                  price=product.skus[0].price,
-                                  size_product=product.skus[0].size_product,
-                                  status=product.skus[0].status,
-                                  seller_sku=product.skus[0].seller_sku,
-                                  package_width=product.skus[0].package_width,
-                                  package_height=product.skus[0].package_height,
-                                  package_length=product.skus[0].package_length,
-                                  package_weight=product.skus[0].package_weight,
-                                  )
-        rs = session.execute(stmt).fetchone()
+
+        package_weight = product.skus[0].package_width * product.skus[0].package_length * product.skus[0].package_height
+        sku = Sku(created_at=product.created_at,
+                  created_by=product.created_by,
+                  updated_at=product.updated_at,
+                  updated_by=product.updated_by,
+                  quantity=product.skus[0].quantity,
+                  images=product.skus[0].images,
+                  color=product.skus[0].color,
+                  price=product.skus[0].price,
+                  size_product=product.skus[0].size_product,
+                  status=product.skus[0].status,
+                  seller_sku=product.skus[0].seller_sku,
+                  package_width=product.skus[0].package_width,
+                  package_height=product.skus[0].package_height,
+                  package_length=product.skus[0].package_length,
+                  package_weight=package_weight,
+                  product_id=_product.id
+                  )
+        session.add(sku)
         session.commit()
-        return rs
+        product = session.get(Product, _product.id)
+        return product
 
     def update_product_repo(self, product_id: int, product: ProductReq) -> Row:
         session: Session = SessionLocal()
@@ -58,6 +66,8 @@ class ProductRepo:
                                       ).where(Product.id == product_id)
         session.execute(stmt)
         session.commit()
+
+        package_weight = product.skus[0].package_width * product.skus[0].package_length * product.skus[0].package_height
         stmt = update(Sku).values(created_at=product.created_at,
                                   created_by=product.created_by,
                                   updated_at=product.updated_at,
@@ -72,7 +82,7 @@ class ProductRepo:
                                   package_width=product.skus[0].package_width,
                                   package_height=product.skus[0].package_height,
                                   package_length=product.skus[0].package_length,
-                                  package_weight=product.skus[0].package_weight,
+                                  package_weight=package_weight,
                                   ).where(Sku.product_id == product_id)
         session.execute(stmt)
         session.commit()
@@ -93,17 +103,17 @@ class ProductRepo:
         if category:
             query = query.filter(Category.name.like(f"%{category}%"))
         if color:
-            query = query.filter(Product.color.like(f"%{color}%"))
+            query = query.filter(Sku.color.like(f"%{color}%"))
         if from_price:
-            query = query.filter(Product.price == from_price)
+            query = query.filter(Sku.price == from_price)
         if to_price:
-            query = query.filter(Product.price == to_price)
+            query = query.filter(Sku.price == to_price)
         if brand:
             query = query.filter(Product.brand.like(f"%{brand}%"))
         if sort_direction == 'asc':
-            query = query.order_by(Product.created_time)
+            query = query.order_by(Product.created_at)
         if sort_direction == 'desc':
-            query = query.order_by(Product.created_time).desc()
+            query = query.order_by(Product.created_at.desc())
         if page and size:
             query = query.limit(size).offset((page - 1) * size)
         rs = session.execute(query).all()
@@ -117,12 +127,17 @@ class ProductRepo:
 
     def delete_product_repo(self, product_id: int):
         session: Session = SessionLocal()
+        query = select(Sku.id).where(Sku.product_id == product_id)
+        rs = session.execute(query).fetchall()
+        for item in rs:
+            query = delete(OrderItem).where(OrderItem.sku_id == item['id'])
+            session.execute(query)
+            session.commit()
         query = delete(Sku).where(Sku.product_id == product_id)
         session.execute(query)
         session.commit()
         query = delete(Product).where(Product.id == product_id)
-        session.commit()
         session.execute(query)
-
+        session.commit()
 
 

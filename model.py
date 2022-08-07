@@ -121,7 +121,6 @@ class Sku(BaseUtil):
     price = Column(NUMBER(22, 2))
     product_id = Column(Integer, ForeignKey("product.id"))
     size_product = Column(VARCHAR2(200))
-    name = Column(VARCHAR2(200))
 
 
 class Order(BaseUtil):
@@ -129,6 +128,7 @@ class Order(BaseUtil):
     id = Column(Integer, primary_key=True)
     customer_name = Column(VARCHAR2(200))
     price = Column(NUMBER(22, 2))
+    discount = Column(NUMBER(22, 2))
     shipping_fee_original = Column(NUMBER(22, 2))
     payment_method = Column(VARCHAR2(100))
     shipping_fee_discount = Column(NUMBER(22, 2))
@@ -151,7 +151,6 @@ class OrderItem(BaseUtil):
     name = Column(VARCHAR2(200))
     main_image = Column(VARCHAR2(200))
     item_price = Column(NUMBER(22, 2))
-    paid_price = Column(NUMBER(22, 2))
-    item_discount = Column(NUMBER(22, 2))
+    # paid_price = Column(NUMBER(22, 2))
     shipping_fee = Column(NUMBER(22, 2))
 

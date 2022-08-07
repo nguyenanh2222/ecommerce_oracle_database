@@ -1,3 +1,4 @@
+from sqlalchemy import update
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
 from database import SessionLocal
@@ -11,8 +12,10 @@ class SkuRepo():
         rs = session.execute(query).fetchone()
         return rs
 
-    def get_skus_repo(self):
-        ...
 
     def delete_sku_repo(self):
         ...
+
+    def update_sku_quantity_repo(self, quantity: int, product_id: int):
+        session: Session = SessionLocal()
+        query = update(Sku).values(quantity=quantity).where(Sku.product_id == product_id)

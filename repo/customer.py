@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from model import Customer, User
 from schema import CustomerReq
+import hashlib
 
 
 class CustomerRepo():
@@ -25,7 +26,10 @@ class CustomerRepo():
                             address=customer.address,
                             province_code=customer.province_code,
                             district_code=customer.district_code,
-                            ward_code=customer.ward_code)
+                            ward_code=customer.ward_code,
+                            password=hashlib.sha256(str(customer.password).encode('utf-8')).hexdigest(),
+                            firstname=customer.firstname,
+                            lastname=customer.lastname)
         session.add(customer)
         session.commit()
         rs = session.get(Customer, customer.username)
@@ -41,7 +45,10 @@ class CustomerRepo():
                                        address=customer.address,
                                        province_code=customer.province_code,
                                        district_code=customer.district_code,
-                                       ward_code=customer.ward_code
+                                       ward_code=customer.ward_code,
+                                       password=hashlib.sha256(str(customer.password).encode('utf-8')).hexdigest(),
+                                       firstname=customer.firstname,
+                                       lastname=customer.lastname
                                        ).where(Customer.username == username)
         session.execute(stmt)
         session.commit()

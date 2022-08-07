@@ -10,9 +10,9 @@ class CartItemService(CartItemRepo):
     def insert_cart_item_service(self,
                                  cart_item: CartItemReq):
         sku = SkuRepo().get_sku_by_id_repo(cart_item.sku_id)
-        product = ProductRepo().get_product_id(sku['Sku'].product_id)
-        if sku == None:
+        if sku  == None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        product = ProductRepo().get_product_id(sku['Sku'].product_id)
         cart_item = CartItemRepo().insert_cart_item_repo(CartItemReq(
             created_at=cart_item.created_at,
             created_by=cart_item.created_by,
@@ -23,15 +23,23 @@ class CartItemService(CartItemRepo):
             item_price=cart_item.item_price,
             username=cart_item.username),
             name=product['Product'].name + sku['Sku'].color + sku['Sku'].size_product)
+
+        if sku['Sku'].quantity < 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
+        sub_quantity = sku['Sku'].quantity - 1
+        sku_quantity = SkuRepo().update_sku_quantity_repo(quantity=sub_quantity, product_id=sku['Sku'].product_id)
+
         return cart_item
 
     def update_cart_item_service(self,
                                  cart_item: CartItemReq,
                                  id: int):
         sku = SkuRepo().get_sku_by_id_repo(cart_item.sku_id)
-        product = ProductRepo().get_product_id(sku['Sku'].product_id)
+        product = ProductRepo().get_product_id(cart_item.sku_id)
         if sku == None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+
         is_cart_item = CartItemRepo().get_cart_item_by_id_repo(id=id)
         if is_cart_item == None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

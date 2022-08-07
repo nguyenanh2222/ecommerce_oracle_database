@@ -1,9 +1,9 @@
 import pandas as pd
-from fastapi import HTTPException
-from starlette import status
 
+from repo.cart import CartItemRepo
 from repo.customer import CustomerRepo
-from schema import CustomerReq, UserReq
+from repo.sku import SkuRepo
+from schema import CustomerReq
 
 
 class CustomerService(CustomerRepo):
@@ -36,7 +36,12 @@ class CustomerService(CustomerRepo):
             address=customer.address,
             province_code=customer.province_code,
             district_code=customer.district_code,
-            ward_code=customer.ward_code))
+            ward_code=customer.ward_code,
+            password=customer.password,
+            firstname=customer.firstname,
+            lastname=customer.lastname
+        ))
+
         return customer
 
     def update_customer_service(self, customer: CustomerReq, username: str):
@@ -50,7 +55,10 @@ class CustomerService(CustomerRepo):
             address=customer.address,
             province_code=customer.province_code,
             district_code=customer.district_code,
-            ward_code=customer.ward_code)
+            ward_code=customer.ward_code,
+            password=customer.password,
+            firstname=customer.firstname,
+            lastname=customer.lastname)
             , username=username)
         return customer
 

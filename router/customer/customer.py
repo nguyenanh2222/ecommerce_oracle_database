@@ -27,13 +27,16 @@ def insert_customer(customer: CustomerReq = Body(
             address=customer.address,
             province_code=customer.province_code,
             district_code=customer.district_code,
-            ward_code=customer.ward_code
+            ward_code=customer.ward_code,
+            password=customer.password,
+            firstname=customer.firstname,
+            lastname=customer.lastname
         ))
     return DataResponse(data=customer)
 
 
 @router.put(
-    path="/{id}",
+    path="/{username}",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
@@ -48,13 +51,17 @@ def update_customer(username: str, customer: CustomerReq = Body(..., examples=cu
         address=customer.address,
         province_code=customer.province_code,
         district_code=customer.district_code,
-        ward_code=customer.ward_code)
+        ward_code=customer.ward_code,
+        password=customer.password,
+        firstname=customer.firstname,
+        lastname=customer.lastname
+    )
         , username=username)
     return DataResponse(data=customer)
 
 
 @router.get(
-    path="/{id}",
+    path="/{username}",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )

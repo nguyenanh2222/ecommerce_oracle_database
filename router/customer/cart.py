@@ -29,11 +29,15 @@ def insert_cart_item(cart_item: CartItemReq = Body(..., example=cart_opt1)) -> D
 
 
 @router.put(
-    path="/",
+    path="/{id}",
     status_code=status.HTTP_200_OK,
     response_model=DataResponse
 )
-def update_cart_item(id: int, cart_item: CartItemReq = Body(..., example=cart_opt1)) -> DataResponse:
+def update_cart_item(
+        id: int,
+        cart_item: CartItemReq = Body(
+            ..., example=cart_opt1)
+) -> DataResponse:
     cart_item = CartItemService().update_cart_item_service(
         cart_item=CartItemReq(
             created_at=cart_item.created_at,
@@ -43,7 +47,8 @@ def update_cart_item(id: int, cart_item: CartItemReq = Body(..., example=cart_op
             sku_id=cart_item.sku_id,
             main_image=cart_item.main_image,
             item_price=cart_item.item_price,
-            username=cart_item.username), id=id)
+            username=cart_item.username),
+        id=id)
     return DataResponse(data=cart_item)
 
 
@@ -68,7 +73,7 @@ def get_cart_item_by_id(id: int) -> DataResponse:
 
 
 @router.delete(
-    path="/",
+    path="/{id}",
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_cart_item(id: int):

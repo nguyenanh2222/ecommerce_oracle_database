@@ -5,7 +5,7 @@ cart_opt1 = {
   "updated_by": "string",
   "sku_id": 1,
   "main_image": "string",
-  "item_price": 0,
-  "username": 0
+  "item_price": 500_000,
+  "username": "vietanh",
 }
 
