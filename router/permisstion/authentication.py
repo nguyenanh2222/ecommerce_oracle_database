@@ -1,3 +1,4 @@
+import os
 from typing import Tuple
 
 import jwt
@@ -23,9 +24,8 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
         try:
             auth_result = await self.authenticate(conn)
         except AuthenticationError as exc:
-            response = self.raise_error(conn, exc)
+            response = self.raise_error(exc, conn)
             await response(scope, receive, send)
-
         if auth_result is None:
             auth_result = AuthCredentials(), UnauthenticatedUser()
         scope["auth"], scope["user"] = auth_result
@@ -35,7 +35,7 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
         scheme, credential = get_authorization_scheme_param(request.headers.get("Authorization"))
         if scheme == "Bearer":
             try:
-                token_decoded = jwt.decode(credential, key="123456", algorithms="HS256")
+                token_decoded = jwt.decode(credential, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
                 return AuthCredentials(), UserAuth(username=token_decoded.get("sub"))
             except ExpiredSignatureError:
                 raise AuthenticationError("signature expired")
@@ -44,5 +44,5 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
         return None
 
     @staticmethod
-    def raise_error(conn: HTTPConnection, exc: Exception) -> Response:
+    def raise_error(exc: Exception) -> Response:
         return PlainTextResponse(str(exc), status_code=401)

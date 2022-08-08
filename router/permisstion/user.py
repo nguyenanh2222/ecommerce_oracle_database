@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from typing import List, Optional
 
@@ -86,17 +87,15 @@ async def login(credentials: HTTPBasicCredentials = Security(HTTPBasic())):
         "sub": credentials.username,
         "exp": datetime.now().timestamp() + 60
     }
-    token = jwt.encode(payload=payload, key="123456", algorithm="HS256")
+    token = jwt.encode(payload=payload, key=os.getenv('SECRET_KEY'), algorithm=os.getenv('ALGORITHM'))
     return token
 
 
 @router.post(
     path="/sample-api"
 )
-async def required_token(request: Request):  #:credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
-    print(type(request.user))
-    return request.user
-    # scheme = credentials.scheme
-    # token = credentials.credentials
-    # token_content = jwt.decode(token, key="123456", algorithms="HS256")
-    # return token_content
+async def required_token(credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
+    scheme = credentials.scheme
+    token = credentials.credentials
+    token_content = jwt.decode(token, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
+    return token_content
