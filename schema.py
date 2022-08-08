@@ -219,3 +219,13 @@ class OrderItemRes(BaseUtil):
     item_price: Decimal = Field(None)
     paid_price: Decimal = Field(None)
     shipping_fee: Decimal = Field(None)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str = None
+
+
