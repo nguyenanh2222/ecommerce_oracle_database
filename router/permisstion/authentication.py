@@ -1,3 +1,4 @@
+# import os
 # from typing import Tuple
 #
 # import jwt
@@ -38,7 +39,7 @@
 #             "Authorization"))
 #         if scheme == "Bearer":
 #             try:
-#                 token_decoded = jwt.decode(credential, key="123456", algorithms="HS256")
+#                 token_decoded = jwt.decode(credential, key=os.getenv('SECRET_KEY'), algorithms="HS256")
 #                 return AuthCredentials(), UserAuth(username=token_decoded.get("sub"))
 #             except ExpiredSignatureError:
 #                 raise AuthenticationError("signature expired")

@@ -57,6 +57,7 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
         scheme, credential = get_authorization_scheme_param(request.headers.get("Authorization"))
         if scheme == "Bearer":
             try:
+                print(os.getenv('SECRET_KEY'))
                 token_decoded = jwt.decode(credential, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
                 return AuthCredentials(), UserAuth(username=token_decoded.get("sub"))
             except ExpiredSignatureError:
@@ -64,7 +65,5 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
             except InvalidTokenError:
                 raise AuthenticationError("token invalid")
 
-
-    @staticmethod
-    def default_on_error(conn: HTTPConnection, exc: Exception) -> Response:
-        return PlainTextResponse(str(exc), status_code=400)
+def default_on_error(conn: HTTPConnection, exc: Exception) -> Response:
+    return PlainTextResponse(str(exc), status_code=401)
