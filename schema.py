@@ -21,61 +21,6 @@ class BaseUtilRes(BaseModel):
     updated_by: str = Field(None)
 
 
-class PermissionReq(BaseModel):
-    code: str = Field(...)
-    name: str = Field(...)
-
-
-class PermissionRes(BaseModel):
-    # code: str = Field(None)
-    name: str = Field(None)
-
-
-class RolePermissionReq(BaseModel):
-    permission_code: str = Field(...)
-    role_code: str = Field(...)
-
-
-class RolePermissionRes(BaseModel):
-    permission_code: str = Field(None)
-    role_code: str = Field(None)
-
-
-class RoleReq(BaseModel):
-    code: str = Field(...)
-    name: str = Field(...)
-
-
-class RoleRes(BaseModel):
-    # code: str = Field(None)
-    name: str = Field(None)
-
-
-class UserRoleReq(BaseModel):
-    username: str = Field(...)
-    role_code: str = Field(...)
-
-
-class UserRoleRes(BaseModel):
-    username: str = Field(None)
-    role_code: str = Field(None)
-
-
-class UserReq(BaseUtil):
-    username: str = Field(None, autoincrement=True, nullable=True)
-    password: str = Field(...)
-    firstname: str = Field(...)
-    lastname: str = Field(...)
-
-
-class UserRes(BaseUtilRes):
-    username: str = Field(None, autoincrement=True, nullable=True)
-    password: str = Field(None)
-    firstname: str = Field(None)
-    lastname: str = Field(None)
-    role_name: str = Field(None)
-
-
 class CustomerReq(BaseUtil):
     phone: str = Field(...)
     address: str = Field(...)
@@ -225,7 +170,62 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     username: str = None
 
+
+class PermissionReq(BaseModel):
+    code: str = Field(...)
+    name: str = Field(...)
+
+
+class PermissionRes(BaseModel):
+    # code: str = Field(None)
+    name: str = Field(None)
+
+
+class RolePermissionReq(BaseModel):
+    permission_code: str = Field(...)
+    role_code: str = Field(...)
+
+
+class RolePermissionRes(BaseModel):
+    permission_code: str = Field(None)
+    role_code: str = Field(None)
+
+
+class RoleReq(BaseModel):
+    code: str = Field(...)
+    name: str = Field(...)
+
+
+class RoleRes(BaseModel):
+    # code: str = Field(None)
+    name: str = Field(None)
+
+
+class UserRoleReq(BaseModel):
+    username: str = Field(...)
+    role_code: str = Field(...)
+
+
+class UserRoleRes(BaseModel):
+    username: str = Field(None)
+    role_code: str = Field(None)
+
+
+class UserReq(BaseUtil):
+    username: str = Field(None, autoincrement=True, nullable=True)
+    password: str = Field(...)
+    firstname: str = Field(...)
+    lastname: str = Field(...)
+
+
+class UserRes(BaseUtilRes):
+    username: str = Field(None, autoincrement=True, nullable=True)
+    password: str = Field(None)
+    firstname: str = Field(None)
+    lastname: str = Field(None)
+    role_name: str = Field(None)
 

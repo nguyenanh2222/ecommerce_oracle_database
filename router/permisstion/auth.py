@@ -19,14 +19,11 @@ from schema import Token
 from router.permisstion.user_auth import UserAuth
 
 
-
-
-
 class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
-    def __init__(self, app: ASGIApp, backend: AuthenticationBackend, on_error: typing.Callable[
+    def __init__(self, app: ASGIApp, on_error: typing.Callable[
         [HTTPConnection, AuthenticationError], Response
     ] = None) -> None:
-        super().__init__(app, backend, on_error)
+        super().__init__(app, on_error)
         self.app = app
         self.on_error: typing.Callable[
             [HTTPConnection, AuthenticationError], Response
@@ -65,6 +62,5 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
                 raise AuthenticationError("token invalid")
 
 
-    @staticmethod
-    def default_on_error(conn: HTTPConnection, exc: Exception) -> Response:
-        return PlainTextResponse(str(exc), status_code=400)
+def default_on_error(conn: HTTPConnection, exc: Exception) -> Response:
+    return PlainTextResponse(str(exc), status_code=401)

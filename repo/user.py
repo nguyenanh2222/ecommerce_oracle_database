@@ -78,3 +78,10 @@ class UserRepo:
         rs = session.execute(query)
         rs = session.get(User, username)
         return rs
+
+    def authenticate_repo(self, username: str, password: str) -> Row:
+        session: Session = SessionLocal()
+        query = session.query(User).filter(
+            User.username == username).filter(User.password == password)
+        rs = session.execute(query).fetchone()
+        return rs

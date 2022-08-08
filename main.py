@@ -39,7 +39,7 @@ app.add_middleware(
     allow_headers=["POST", "GET"],
 )
 
-app.add_middleware(AuthenticationMiddlewareExtended, backend=None)
+app.add_middleware(AuthenticationMiddlewareExtended)
 
 
 class Tags(str, Enum):
@@ -119,16 +119,15 @@ async def startup():
         quantity=100
     ))
 
-    engine.execute(insert(User).values(username='vietanh',
-                                       password=sha256(
-                                           "12345678".encode('utf-8')).hexdigest(),
+    engine.execute(insert(User).values(username='ANH',
+                                       password="123456",
                                        firstname='anh',
                                        lastname='nguyen'
                                        ))
     engine.execute(insert(Role).values(code='001',
                                        name='ADMIN'))
 
-    engine.execute(insert(UserRole).values(username='vietanh',
+    engine.execute(insert(UserRole).values(username='ANH',
                                            role_code='001'))
 
     engine.execute(insert(Permission).values(code='00E',

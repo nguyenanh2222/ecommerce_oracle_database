@@ -1,8 +1,11 @@
+from passlib.context import CryptContext
 from starlette import status
 from starlette.responses import Response
 
 from repo.user import UserRepo
 from schema import UserReq
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserService(UserRepo):
@@ -41,12 +44,23 @@ class UserService(UserRepo):
             list_user.append({'user': user['User'], 'role': role['Role'].name, 'permission': permission})
         return list_user
 
-    def get_user_by_username_service(self, username: str):
-        user = UserRepo().get_user_by_username_repo(username)
-        return user
-
     def delete_user_service(self, username: str):
         user = UserRepo().delete_user_repo(username=username)
 
+    # def verify_password(self, plain_password, hashed_password):
+    #     return pwd_context.verify(plain_password, hashed_password)
+    #
+    # def get_password_hash(self, password):
+    #     return pwd_context.hash(password)
 
+    def authenticate_user(self, username: str, password: str):
+        user = UserRepo().authenticate_repo(username, password)
+        if not user:
+            return False
+        # if not self.verify_password(password, user['User'].password):
+        #     return False
+        return user
 
+    def get_user_by_username_service(self, username: str):
+        user = UserRepo().get_user_by_username_repo(username)
+        return user
