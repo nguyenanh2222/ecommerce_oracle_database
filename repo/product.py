@@ -130,7 +130,7 @@ class ProductRepo:
         query = select(Sku.id).where(Sku.product_id == product_id)
         rs = session.execute(query).fetchall()
         for item in rs:
-            query = delete(OrderItem).where(OrderItem.sku_id == item['id'])
+            query = update(OrderItem).values(sku_id=None).where(OrderItem.sku_id == item['id'])
             session.execute(query)
             session.commit()
         query = delete(Sku).where(Sku.product_id == product_id)
@@ -139,5 +139,3 @@ class ProductRepo:
         query = delete(Product).where(Product.id == product_id)
         session.execute(query)
         session.commit()
-
-

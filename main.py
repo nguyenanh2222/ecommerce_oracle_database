@@ -9,7 +9,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from database import username, password, host, port, database
 from model import *
-from router.permisstion.authentication import AuthenticationMiddlewareExtended
+from router.permisstion.auth import AuthenticationMiddlewareExtended
 from status import EOrderStatus
 
 from router.permisstion.user import router as router_user
