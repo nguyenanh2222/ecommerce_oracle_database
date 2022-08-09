@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from loguru import logger
 from sqlalchemy import create_engine, insert
-from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from database import username, password, host, port, database
 from model import *

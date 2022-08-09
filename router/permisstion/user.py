@@ -7,9 +7,8 @@ from fastapi.security import HTTPBasicCredentials, HTTPBasic, HTTPAuthorizationC
 from starlette import status
 from starlette.responses import Response
 from project.schemas import DataResponse
-from repo.user import UserRepo
 from router.examples.user import user_op1
-from schema import UserReq, UserRes, Token, RoleReq
+from schema import UserReq, Token, RoleReq
 from service.permisstion.user import UserService
 
 router = APIRouter()
@@ -33,8 +32,8 @@ router = APIRouter()
 @router.post(path="/sign_in",
              response_model=DataResponse,
              status_code=status.HTTP_201_CREATED)
-def sign_in(user: UserReq):
-    user = UserService().sign_in_service(UserReq(
+def sign_up(user: UserReq):
+    user = UserService().sign_up_service(UserReq(
         created_at=user.created_at,
         created_by=user.created_by,
         updated_at=user.updated_at,
@@ -51,12 +50,10 @@ def sign_in(user: UserReq):
 
 
 @router.post(path="/sign_up",
-             response_model=DataResponse,
              status_code=status.HTTP_200_OK)
-def sign_up(username: str, password: str,
+def sign_in(username: str, password: str,
             credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
-    user = UserService().sign_up_service(username, password)
-    scheme = credentials.scheme
+    user = UserService().sign_in_service(username, password)
     token = credentials.credentials
     token_content = jwt.decode(token,
                                key=os.getenv('SECRET_KEY'),
@@ -123,12 +120,12 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    # user = UserService().verify_password(credentials.password, user.hashed_password)
-    # if not user:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="Incorrect username or password",
-    #         headers={"WWW-Authenticate": "Bearer"})
+    user = UserService().check_password(str(credentials.username).encode('utf-8'))
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"})
 
     role = UserService().get_role(credentials.username)
     role_code = role['Role'].code
@@ -136,8 +133,7 @@ async def login_for_access_token(
     payload = {
         "sub": credentials.username,
         "iat": datetime.datetime.now(),
-        "exp": datetime.datetime.now() + datetime
-        .timedelta(hours=2, minutes=10),
+        "exp": datetime.datetime.now() + datetime.timedelta(hours=2, minutes=10),
         "role": role['Role'].name,
         "permission": permissions
     }

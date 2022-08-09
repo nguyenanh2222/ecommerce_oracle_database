@@ -12,7 +12,7 @@ from schema import UserReq, RoleReq
 class UserRepo:
     def insert_user_repo(self, user: UserReq) -> Row:
         session= SessionLocal()
-        user = User(
+        user_db = User(
             created_at=user.created_at,
             created_by=user.created_by,
             updated_at=user.updated_at,
@@ -21,7 +21,19 @@ class UserRepo:
             password=user.password,
             firstname=user.firstname,
             lastname=user.lastname)
-        session.add(user)
+        session.add(user_db)
+        session.commit()
+        role = Role(
+            code=user.role.code,
+            name=user.role.name
+        )
+        session.add(role)
+        session.commit()
+        user_role = UserRole(
+            username=user.username,
+            role_code=user.role.code
+        )
+        session.add(user_role)
         session.commit()
         rs = session.get(User, user.username)
         return rs
@@ -52,8 +64,7 @@ class UserRepo:
     def get_role(self, username: str) -> Row:
         session= SessionLocal()
         query = session.query(Role).join(UserRole).filter(
-            UserRole.username == username
-        )
+            UserRole.username == username)
         rs = session.execute(query).fetchone()
         return rs
 
@@ -62,7 +73,6 @@ class UserRepo:
         query = session.query(Permission).join(RolePermission).filter(RolePermission.role_code == role_code)
         rs = session.execute(query).fetchall()
         list_permission = [permission['Permission'].name for permission in rs]
-        print(list_permission)
         return list_permission
 
     def get_user_by_username_repo(self, username: str) -> Row:
@@ -84,7 +94,6 @@ class UserRepo:
         session= SessionLocal()
         query = session.query(User).get(username)
         rs = session.execute(query).fetchone()
-        print(rs)
         return rs
 
     def get_roles(self):

@@ -68,12 +68,13 @@ class UserService(UserRepo):
         return user
 
     def get_hashed_password(self, plain_text_password):
-        return bcrypt.hashpw(plain_text_password.encode('utf-8'), bcrypt.gensalt(rounds=12, prefix=b"2b"))
+        return bcrypt.hashpw(str(plain_text_password).encode('utf-8'), bcrypt.gensalt())
 
-    def check_password(self, plain_text_password, hashed_password):
-        return bcrypt.checkpw(password=plain_text_password, hashed_password=hashed_password)
+    def check_password(self, plain_text_password):
+        hashed_password = self.get_hashed_password(plain_text_password)
+        return bcrypt.checkpw(password=str(plain_text_password).encode('utf-8'), hashed_password=hashed_password)
 
-    def sign_in_service(self, user: UserReq):
+    def sign_up_service(self, user: UserReq):
         password = self.get_hashed_password(user.password)        # confirm password
         user = UserReq(
             created_at=user.created_at,
@@ -87,15 +88,14 @@ class UserService(UserRepo):
                 code=user.role.code,
                 name=user.role.name
             ))
-        role = UserRepo().insert_role(role=user.role)
         user = UserRepo().insert_user_repo(user=user)
         return user
 
-    def sign_up_service(self, username: str, password: str):
+    def sign_in_service(self, username: str, password: str):
         user_db = UserRepo().get_user_by_username_repo(username)
         if user_db != None:
-            if self.check_password(password.encode('utf-8'), user_db['User'].password.encode('utf-8')):
-                return {'username': username, 'password': password }
+            if self.check_password(password.encode('utf-8')):
+                return username, password
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
