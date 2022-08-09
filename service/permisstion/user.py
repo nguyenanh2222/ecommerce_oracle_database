@@ -53,9 +53,13 @@ class UserService(UserRepo):
     def delete_user_service(self, username: str):
         user = UserRepo().delete_user_repo(username=username)
 
-    def authenticate_user(self, username: str, password: str):
-        user = UserRepo().authenticate_repo(username)
+    def authenticate_user(self,  username: str, password: str):
+        user = UserRepo().get_user_by_username_repo(username)
         if not user:
+        #     return False
+        # user = get_user(fake_db, username)
+        #
+        # if not verify_password(password, user.hashed_password):
             return False
         return user
 
