@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 class BaseUtil(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    created_by: str = Field(None)
+    created_by: str = Field(None, max_length=20)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     updated_by: str = Field(None)
 
@@ -16,7 +16,7 @@ class BaseUtil(BaseModel):
 
 class BaseUtilRes(BaseModel):
     created_at: datetime = Field(None)
-    created_by: str = Field(None)
+    created_by: str = Field(None, max_length=20)
     updated_at: datetime = Field(None)
     updated_by: str = Field(None)
 
@@ -220,6 +220,7 @@ class UserReq(BaseUtil):
     password: str = Field(...)
     firstname: str = Field(...)
     lastname: str = Field(...)
+    role: RoleReq = Field(...)
 
 
 class UserRes(BaseUtilRes):

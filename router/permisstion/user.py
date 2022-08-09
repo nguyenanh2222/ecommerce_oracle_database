@@ -9,18 +9,32 @@ from starlette.responses import Response
 from project.schemas import DataResponse
 from repo.user import UserRepo
 from router.examples.user import user_op1
-from schema import UserReq, UserRes, Token
+from schema import UserReq, UserRes, Token, RoleReq
 from service.permisstion.user import UserService
-
 
 router = APIRouter()
 
 
-@router.post(path="/",
+# @router.post(path="/",
+#              response_model=DataResponse,
+#              status_code=status.HTTP_201_CREATED)
+# def insert_user(user: UserReq):
+#     user = UserService().insert_user_service(UserReq(
+#         created_at=user.created_at,
+#         created_by=user.created_by,
+#         updated_at=user.updated_at,
+#         updated_by=user.updated_by,
+#         username=user.username,
+#         password=user.password,
+#         firstname=user.firstname,
+#         lastname=user.lastname))
+#     return DataResponse(data=user)
+
+@router.post(path="/sign_in",
              response_model=DataResponse,
              status_code=status.HTTP_201_CREATED)
-def insert_user(user: UserReq):
-    user = UserService().insert_user_service(UserReq(
+def sign_in(user: UserReq):
+    user = UserService().sign_in_service(UserReq(
         created_at=user.created_at,
         created_by=user.created_by,
         updated_at=user.updated_at,
@@ -28,8 +42,26 @@ def insert_user(user: UserReq):
         username=user.username,
         password=user.password,
         firstname=user.firstname,
-        lastname=user.lastname))
+        lastname=user.lastname,
+        role=RoleReq(
+            code=user.role.code,
+            name=user.role.name
+        )))
     return DataResponse(data=user)
+
+
+@router.post(path="/sign_up",
+             response_model=DataResponse,
+             status_code=status.HTTP_200_OK)
+def sign_up(username: str, password: str,
+            credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
+    user = UserService().sign_up_service(username, password)
+    scheme = credentials.scheme
+    token = credentials.credentials
+    token_content = jwt.decode(token,
+                               key=os.getenv('SECRET_KEY'),
+                               algorithms=os.getenv("ALGORITHM"))
+    return token_content
 
 
 @router.put(
@@ -83,7 +115,7 @@ def delete_user(username: str):
     response_model=Token
 )
 async def login_for_access_token(
-                credentials: HTTPBasicCredentials = Security(HTTPBasic())) -> Token:
+        credentials: HTTPBasicCredentials = Security(HTTPBasic())) -> Token:
     user = UserService().authenticate_user(credentials.username, credentials.password)
     if not user:
         raise HTTPException(
@@ -97,10 +129,17 @@ async def login_for_access_token(
     #         status_code=status.HTTP_401_UNAUTHORIZED,
     #         detail="Incorrect username or password",
     #         headers={"WWW-Authenticate": "Bearer"})
+
+    role = UserService().get_role(credentials.username)
+    role_code = role['Role'].code
+    permissions = UserService().get_permisstion(role_code)
     payload = {
         "sub": credentials.username,
         "iat": datetime.datetime.now(),
-        "exp": datetime.datetime.now() + datetime.timedelta(hours=2, minutes=10)
+        "exp": datetime.datetime.now() + datetime
+        .timedelta(hours=2, minutes=10),
+        "role": role['Role'].name,
+        "permission": permissions
     }
     token = jwt.encode(payload=payload,
                        key=os.getenv('SECRET_KEY'),
@@ -113,9 +152,6 @@ async def login_for_access_token(
     path="/sample-api"
 )
 async def required_token(credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
-    # request: Request)
-    # print(type(request.user))
-    # return request.user
     scheme = credentials.scheme
     token = credentials.credentials
     token_content = jwt.decode(token,

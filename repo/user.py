@@ -6,12 +6,12 @@ from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
 from model import User, RolePermission, Permission, Role, UserRole
 from database import SessionLocal
-from schema import UserReq
+from schema import UserReq, RoleReq
 
 
 class UserRepo:
     def insert_user_repo(self, user: UserReq) -> Row:
-        session: Session = SessionLocal()
+        session= SessionLocal()
         user = User(
             created_at=user.created_at,
             created_by=user.created_by,
@@ -27,7 +27,7 @@ class UserRepo:
         return rs
 
     def update_product_repo(self, username: str, user: UserReq) -> Row:
-        session: Session = SessionLocal()
+        session= SessionLocal()
         query = update(User).values(
             created_at=user.created_at,
             created_by=user.created_by,
@@ -44,34 +44,35 @@ class UserRepo:
         return rs
 
     def get_users(self) -> List[Row]:
-        session: Session = SessionLocal()
+        session = SessionLocal()
         query = session.query(User)
         rs = session.execute(query).fetchall()
         return rs
 
-    def get_role(self, username: str, role_name: str) -> Row:
-        session: Session = SessionLocal()
+    def get_role(self, username: str) -> Row:
+        session= SessionLocal()
         query = session.query(Role).join(UserRole).filter(
             UserRole.username == username
-        ).filter(Role.name == role_name)
+        )
         rs = session.execute(query).fetchone()
         return rs
 
     def get_permisstion(self, role_code: str) -> List:
-        session: Session = SessionLocal()
+        session= SessionLocal()
         query = session.query(Permission).join(RolePermission).filter(RolePermission.role_code == role_code)
         rs = session.execute(query).fetchall()
         list_permission = [permission['Permission'].name for permission in rs]
+        print(list_permission)
         return list_permission
 
     def get_user_by_username_repo(self, username: str) -> Row:
-        session: Session = SessionLocal()
+        session= SessionLocal()
         query = session.query(User).filter(User.username == username)
         rs = session.execute(query).fetchone()
         return rs
 
     def delete_user_repo(self, username: str):
-        session: Session = SessionLocal()
+        session= SessionLocal()
         query = delete(UserRole).where(UserRole.username == username)
         rs = session.execute(query)
         query = delete(User).where(User.username == username)
@@ -80,8 +81,24 @@ class UserRepo:
         return rs
 
     def authenticate_repo(self, username: str, password: str) -> Row:
-        session: Session = SessionLocal()
-        query = session.query(User).filter(
-            User.username == username).filter(User.password == password)
+        session= SessionLocal()
+        query = session.query(User).get(username)
         rs = session.execute(query).fetchone()
+        print(rs)
         return rs
+
+    def get_roles(self):
+        session= SessionLocal()
+        query = session.query(Role)
+        rs = session.execute(query)
+        return rs
+
+    def insert_role(self, role: RoleReq):
+        session= SessionLocal()
+        role = Role(
+            code=role.code,
+            name=role.name
+        )
+        session.add(role)
+        session.commit()
+        return role

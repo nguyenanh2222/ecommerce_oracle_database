@@ -25,7 +25,7 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
     ] = None) -> None:
         super().__init__(app, on_error)
         self.app = app
-        self.on_error: typing.Callable[
+        self.on_error: [
             [HTTPConnection, AuthenticationError], Response
         ] = (on_error if on_error is not None else self.default_on_error)
 
