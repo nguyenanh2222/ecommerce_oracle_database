@@ -14,7 +14,7 @@ router = APIRouter()
     response_model=DataResponse,
     status_code=status.HTTP_201_CREATED
 )
-def insert_customer(customer: CustomerReq = Body(
+def created_profile(customer: CustomerReq = Body(
     ..., examples=customer_op1)) -> DataResponse:
     customer = CustomerService().insert_customer_service(
         customer=CustomerReq(
@@ -40,7 +40,7 @@ def insert_customer(customer: CustomerReq = Body(
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
-def update_customer(username: str, customer: CustomerReq = Body(..., examples=customer_op1)):
+def update_profile(username: str, customer: CustomerReq = Body(..., examples=customer_op1)):
     customer = CustomerService().update_customer_service(customer=CustomerReq(
         created_at=customer.created_at,
         created_by=customer.created_by,
@@ -65,6 +65,6 @@ def update_customer(username: str, customer: CustomerReq = Body(..., examples=cu
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
-def get_customer(username: str) -> DataResponse:
+def get_profile_by_id(username: str) -> DataResponse:
     customer = CustomerService().get_customer_by_username_service(username=username)
     return DataResponse(data=customer)

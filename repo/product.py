@@ -1,17 +1,13 @@
+import json
 from decimal import Decimal
 from typing import List
-
-from fastapi import UploadFile
-from sqlalchemy import insert, select, update, DateTime, delete, Table, Column, Integer, create_engine, \
-    ForeignKeyConstraint, column
+from sqlalchemy import select, update, delete
 from sqlalchemy.engine import Row
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.ddl import DropConstraint
-
-from database import SessionLocal, username, password, host, port, database
+from database import SessionLocal
 from model import Product, Sku, Category, OrderItem
 from project.schemas import Sort
-from schema import ProductReq, SkuReq
+from schema import ProductReq
 
 
 class ProductRepo:
@@ -36,7 +32,7 @@ class ProductRepo:
                   updated_at=product.updated_at,
                   updated_by=product.updated_by,
                   quantity=product.skus[0].quantity,
-                  images=product.skus[0].images,
+                  images=json.dumps([{"name": f"{product.skus[0].images}"}]),
                   color=product.skus[0].color,
                   price=product.skus[0].price,
                   size_product=product.skus[0].size_product,
@@ -90,9 +86,11 @@ class ProductRepo:
         return rs
 
     def get_products_repo(self,
-                          name: str, category: str,
+                          name: str,
+                          category: str,
                           color: str,
-                          from_price: Decimal, to_price: Decimal,
+                          from_price: Decimal,
+                          to_price: Decimal,
                           brand: str,
                           page: int, size: int,
                           sort_direction: Sort.Direction) -> List[Row]:
@@ -117,6 +115,7 @@ class ProductRepo:
         if page and size:
             query = query.limit(size).offset((page - 1) * size)
         rs = session.execute(query).all()
+
         return rs
 
     def get_product_id(self, product_id: int) -> Row:

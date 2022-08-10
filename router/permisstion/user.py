@@ -14,21 +14,6 @@ from service.permisstion.user import UserService
 router = APIRouter()
 
 
-# @router.post(path="/",
-#              response_model=DataResponse,
-#              status_code=status.HTTP_201_CREATED)
-# def insert_user(user: UserReq):
-#     user = UserService().insert_user_service(UserReq(
-#         created_at=user.created_at,
-#         created_by=user.created_by,
-#         updated_at=user.updated_at,
-#         updated_by=user.updated_by,
-#         username=user.username,
-#         password=user.password,
-#         firstname=user.firstname,
-#         lastname=user.lastname))
-#     return DataResponse(data=user)
-
 @router.post(path="/sign_in",
              response_model=DataResponse,
              status_code=status.HTTP_201_CREATED)
@@ -62,7 +47,7 @@ def sign_in(username: str, password: str,
 
 
 @router.put(
-    path="/{id}",
+    path="/{username}",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
@@ -88,17 +73,17 @@ def get_user(role_name: str = Query(None, example="ADMIN")):
 
 
 @router.get(
-    path="/{id}",
+    path="/{username}",
     status_code=status.HTTP_200_OK,
     response_model=DataResponse
 )
-def get_user_by_id(username: str = Query(..., example="vietanh")):
+def get_user_by_username(username: str = Query(..., example="vietanh")):
     user = UserService().get_user_by_username_repo(username)
     return DataResponse(data=user)
 
 
 @router.delete(
-    path="/{id}",
+    path="/{username}",
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_user(username: str):
@@ -145,7 +130,8 @@ async def login_for_access_token(
 
 
 @router.post(
-    path="/sample-api"
+    path="/sample-api",
+    deprecated=True
 )
 async def required_token(credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
     scheme = credentials.scheme

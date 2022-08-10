@@ -56,10 +56,8 @@ class UserService(UserRepo):
     def authenticate_user(self,  username: str, password: str):
         user = UserRepo().get_user_by_username_repo(username)
         if not user:
-        #     return False
-        # user = get_user(fake_db, username)
-        #
-        # if not verify_password(password, user.hashed_password):
+            return False
+        if not self.check_password(password):
             return False
         return user
 

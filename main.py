@@ -1,9 +1,11 @@
 import json
+from decimal import Decimal
 from enum import Enum
 from hashlib import sha256
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from loguru import logger
+from py import process
 from sqlalchemy import create_engine, insert
 from starlette.middleware.cors import CORSMiddleware
 from database import username, password, host, port, database
@@ -104,7 +106,7 @@ async def startup():
     engine.execute(insert(Product).values(
         name="example product",
         category_id=1,
-        brand="no brand"
+        brand="no brand",
     ))
     engine.execute(insert(Sku).values(
         product_id=1,
@@ -115,7 +117,8 @@ async def startup():
         package_height=4,
         package_length=5,
         package_weight=60,
-        quantity=100
+        quantity=100,
+        price=Decimal(150000)
     ))
 
     engine.execute(insert(User).values(username='ANH',
