@@ -67,4 +67,4 @@ def update_profile(username: str, customer: CustomerReq = Body(..., examples=cus
 )
 def get_profile_by_id(username: str) -> DataResponse:
     customer = CustomerService().get_customer_by_username_service(username=username)
-    return DataResponse(data=customer)
+    return DataResponse(data=customer["Customer"])

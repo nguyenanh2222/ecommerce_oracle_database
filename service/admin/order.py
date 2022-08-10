@@ -43,9 +43,7 @@ class OrderServiceAd(OrderRepo):
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-        data = [{'order': order,
-                 'order_items': OrderItemRepo().get_order_items(order_id=order['Order'].id)
-                 } for order in orders]
+        data = [order['Order'] for order in orders]
 
         return PageResponse(data=data,
                             total_item=total_item,
@@ -59,6 +57,6 @@ class OrderServiceAd(OrderRepo):
                 {'order_item': order_item}]
         return data
 
-    def change_order_status_service(self, order_id: int, next_status: EOrderStatus) -> DataResponse:
+    def change_order_status_service(self, order_id: int, next_status: EOrderStatus):
         order = OrderRepo().change_order_status_repo(order_id=order_id, next_status=next_status)
-        return DataResponse(data=order)
+        return order

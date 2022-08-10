@@ -38,4 +38,3 @@ class AdminAPIExecutor():
             res += f"size={size}&"
         res = client.get(res[:-1])
         assert res.status_code == status.HTTP_200_OK
-        print(res.json())

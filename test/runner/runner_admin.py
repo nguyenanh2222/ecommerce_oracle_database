@@ -20,28 +20,25 @@ class TestSimpleCaseAdmin:
                                                     size=2,
                                                     sort_direction="asc"
                                                     )
-        # self.executor_admin.test_admin_get_products(
-        #     name="example%20product",
-        #     category="A",
-        #     color="red",
-        #     from_price=Decimal(0),
-        #     to_price=Decimal(200000),
-        #     brand="n",
-        #     page=1,
-        #     size=2,
-        #     sort_direction="desc"
-        # )
-        # self.executor_admin.test_admin_get_products(
-        #     category="A",
-        #     color="red",
-        #     from_price=Decimal(0),
-        #     to_price=Decimal(200000),
-        #     brand="n",
-        #     page=1,
-        #     size=2,
-        #     sort_direction="desc"
-        # )
-
+        self.executor_admin.test_admin_get_products(
+            from_price=Decimal(0),
+            to_price=Decimal(200000),
+            brand="no",
+            page=1,
+            size=2,
+            sort_direction="asc"
+        )
+        self.executor_admin.test_admin_get_products(
+            size=2,
+            sort_direction="desc"
+        )
+        self.executor_admin.test_admin_get_products()
+        self.executor_admin.test_admin_get_products(
+            brand="NO",
+            page=1,
+            size=2,
+            sort_direction="asc"
+        )
     def test_admin_insert_product(self):
         ...
 

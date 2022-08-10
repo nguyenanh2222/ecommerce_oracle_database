@@ -87,7 +87,10 @@ class ProductServiceAd(ProductRepo):
         current_page = page
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-        return PageResponse(data=products,
+        list_product = []
+        for product in products:
+            list_product.append(product['Product'])
+        return PageResponse(data=list_product,
                             total_items=total_items,
                             total_page=total_page,
                             current_page=current_page)

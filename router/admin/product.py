@@ -1,11 +1,11 @@
 from decimal import Decimal
 from starlette import status
-from fastapi import APIRouter, Query, Body, UploadFile, Path
+from fastapi import APIRouter, Query, Body
 from starlette.responses import Response
 
 from project.schemas import DataResponse, Sort, PageResponse
 from router.examples.product import product_op1
-from schema import ProductRes, ProductReq, SkuReq
+from schema import ProductReq, SkuReq
 from service.admin.product import ProductServiceAd
 
 router = APIRouter()
@@ -43,7 +43,7 @@ def insert_product(product: ProductReq = Body(..., examples=product_op1)):
                      package_weight=product.skus[0].package_width * product.skus[0].package_height * product.skus[
                          0].package_length,
                      )]))
-    return DataResponse(data=product)
+    return DataResponse(data=product['Product'])
 
 
 @router.put(
@@ -77,7 +77,7 @@ def update_product(product_id: int, product: ProductReq = Body(..., examples=pro
                                                                          package_height=product.skus[0].package_height,
                                                                          package_length=product.skus[0].package_length,
                                                                          )]))
-    return DataResponse(data=product)
+    return DataResponse(data=product['Product'])
 
 
 @router.get(
@@ -120,7 +120,7 @@ def get_products(
 )
 def get_product_id(product_id: int) -> DataResponse:
     product = ProductServiceAd().get_product_id_service(product_id=product_id)
-    return DataResponse(data=product)
+    return DataResponse(data=product['Product'])
 
 
 @router.delete(
