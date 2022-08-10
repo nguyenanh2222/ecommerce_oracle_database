@@ -22,7 +22,7 @@ def place_order(order: OrderReq = Body(..., examples=order_op3)):
         name_shipping=order.name_shipping,
         customer_username=order.customer_username,
         discount=order.discount))
-    return DataResponse(data=order)
+    return DataResponse(data=order["Order"])
 
 
 @router.get(
@@ -50,7 +50,7 @@ def get_orders_cus(
         payment_method=payment_method,
         name_shipping=name_shipping,
         phone_shipping=phone_shipping,
-        address_shipping=address_shipping,
+        address_shipping=address_shipping.lower(),
         province_code_shipping=province_code_shipping,
         ward_code_shipping=ward_code_shipping,
         district_code_shipping=district_code_shipping,
