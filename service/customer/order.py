@@ -1,7 +1,9 @@
+import math
 from datetime import datetime
 from decimal import Decimal
 from typing import List
 from fastapi import HTTPException
+from numpy import ceil
 from sqlalchemy.engine import Row
 from starlette import status
 from model import Order, OrderItem
@@ -17,22 +19,21 @@ from status import EOrderStatus
 
 class OrderServiceCus(OrderRepo):
     def insert_order_item_service(self, username: str) -> List:
-
         cart_items = CartItemRepo().get_cart_items_repo(username=username)
         order_items = []
         for cart_item in cart_items:
-            sku = SkuRepo().get_sku_by_id_repo(cart_item['CartItem'].sku_id)
+            sku = SkuRepo().get_sku_by_id_repo(cart_item.sku_id)
             if sku['Sku'].package_weight < 0.1:
                 sku['Sku'].package_weight = 0.1
             shipping_fee = sku['Sku'].package_weight * 1_500
             order_item = OrderItemRepo().insert_order_item_repo(OrderItem(
-                sku_id=cart_item['CartItem'].sku_id,
-                name=cart_item['CartItem'].name,
-                main_image=cart_item['CartItem'].main_image,
-                item_price=cart_item['CartItem'].item_price,
+                sku_id=cart_item.sku_id,
+                name=cart_item.name,
+                main_image=cart_item.main_image,
+                item_price=cart_item.item_price,
                 created_at=datetime.now(),
-                created_by=cart_item['CartItem'].created_by,
-                updated_by=cart_item['CartItem'].updated_by,
+                created_by=cart_item.created_by,
+                updated_by=cart_item.updated_by,
                 updated_at=datetime.now(),
                 shipping_fee=shipping_fee,
             )
@@ -49,10 +50,10 @@ class OrderServiceCus(OrderRepo):
         if customer == None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         if order.customer_username == None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         order_items = []
         for cart_item in cart_items:
-            order_item = OrderItemRepo().get_order_item_by_sku_id(cart_item['CartItem'].sku_id)
+            order_item = OrderItemRepo().get_order_item_by_sku_id(cart_item.sku_id)
             order_items.append(order_item)
         price = 0
         items_count = 0
@@ -125,16 +126,14 @@ class OrderServiceCus(OrderRepo):
                                                  page=page,
                                                  size=size
                                                  )
-        total_page = len(orders) / size
+        total_page = math.ceil(len(orders) / size)
         current_page = page
         total_items = len(orders)
 
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-        data = [{'order': order,
-                 'order_items': OrderItemRepo().get_order_items(order_id=order['Order'].id)
-                 } for order in orders]
+        data = [order["Order"] for order in orders]
 
         return PageResponse(data=data,
                             total_items=total_items,

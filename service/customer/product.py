@@ -30,7 +30,7 @@ class ProductServiceCus(ProductRepo):
         current_page = page
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-        return PageResponse(data=products,
+        return PageResponse(data=[product['Product'] for product in products],
                             total_items=total_items,
                             total_page=total_page,
                             current_page=current_page)
@@ -38,6 +38,6 @@ class ProductServiceCus(ProductRepo):
     def get_product_id_service_cus(self, product_id: int):
         product = ProductRepo().get_product_id(product_id=product_id)
         if product:
-            return product
+            return product["Product"]
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)

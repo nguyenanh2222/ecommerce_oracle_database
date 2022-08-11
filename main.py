@@ -1,11 +1,12 @@
 import json
+from decimal import Decimal
 from enum import Enum
 from hashlib import sha256
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from loguru import logger
+from py import process
 from sqlalchemy import create_engine, insert
-from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from database import username, password, host, port, database
 from model import *
@@ -39,7 +40,7 @@ app.add_middleware(
     allow_headers=["POST", "GET"],
 )
 
-app.add_middleware(AuthenticationMiddlewareExtended, backend=None)
+app.add_middleware(AuthenticationMiddlewareExtended)
 
 
 class Tags(str, Enum):
@@ -105,7 +106,7 @@ async def startup():
     engine.execute(insert(Product).values(
         name="example product",
         category_id=1,
-        brand="no brand"
+        brand="no brand",
     ))
     engine.execute(insert(Sku).values(
         product_id=1,
@@ -116,19 +117,19 @@ async def startup():
         package_height=4,
         package_length=5,
         package_weight=60,
-        quantity=100
+        quantity=100,
+        price=Decimal(150000)
     ))
 
-    engine.execute(insert(User).values(username='vietanh',
-                                       password=sha256(
-                                           "12345678".encode('utf-8')).hexdigest(),
+    engine.execute(insert(User).values(username='ANH',
+                                       password="123456",
                                        firstname='anh',
                                        lastname='nguyen'
                                        ))
     engine.execute(insert(Role).values(code='001',
                                        name='ADMIN'))
 
-    engine.execute(insert(UserRole).values(username='vietanh',
+    engine.execute(insert(UserRole).values(username='ANH',
                                            role_code='001'))
 
     engine.execute(insert(Permission).values(code='00E',
@@ -145,13 +146,27 @@ async def startup():
         item_price=200_000,
     ))
     engine.execute(insert(Order).values(status=EOrderStatus.CANCELLED,
-                                        customer_name='vietanh'))
-    engine.execute(insert(OrderItem).values(shipping_fee=15_000,
+                                        customer_name='vietanh',
+                                        price=Decimal(1500000),
+                                        discount=0.3,
+                                        shipping_fee_original=Decimal(14000),
+                                        shipping_fee_discount=0.2,
+                                        items_count=3,
+                                        payment_method="cod",
+                                        name_shipping="a",
+                                        phone_shipping="0334872134",
+                                        address_shipping="a",
+                                        customer_username="vietanh",
+                                        province_code_shipping="01",
+                                        ward_code_shipping="00001",
+                                        district_code_shipping="001",
+                                        ))
+    engine.execute(insert(OrderItem).values(shipping_fee=Decimal(15000),
                                             created_by="admin",
                                             updated_by="admin",
                                             order_id=1,
                                             sku_id=1,
-                                            item_price=300_000,
+                                            item_price=Decimal(300000),
                                             name="product_name+sku_color+sku_size",
                                             main_image=json.dumps([{"name": "bbi0.jpg"}]
                                                                   )))

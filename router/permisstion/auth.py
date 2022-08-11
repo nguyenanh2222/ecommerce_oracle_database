@@ -19,16 +19,13 @@ from schema import Token
 from router.permisstion.user_auth import UserAuth
 
 
-
-
-
 class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
-    def __init__(self, app: ASGIApp, backend: AuthenticationBackend, on_error: typing.Callable[
+    def __init__(self, app: ASGIApp, on_error: typing.Callable[
         [HTTPConnection, AuthenticationError], Response
     ] = None) -> None:
-        super().__init__(app, backend, on_error)
+        super().__init__(app, on_error)
         self.app = app
-        self.on_error: typing.Callable[
+        self.on_error: [
             [HTTPConnection, AuthenticationError], Response
         ] = (on_error if on_error is not None else self.default_on_error)
 
@@ -57,13 +54,13 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
         scheme, credential = get_authorization_scheme_param(request.headers.get("Authorization"))
         if scheme == "Bearer":
             try:
-                print(os.getenv('SECRET_KEY'))
                 token_decoded = jwt.decode(credential, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
                 return AuthCredentials(), UserAuth(username=token_decoded.get("sub"))
             except ExpiredSignatureError:
                 raise AuthenticationError("signature expired")
             except InvalidTokenError:
                 raise AuthenticationError("token invalid")
+
 
 def default_on_error(conn: HTTPConnection, exc: Exception) -> Response:
     return PlainTextResponse(str(exc), status_code=401)

@@ -1,27 +1,24 @@
 import os
 from datetime import datetime
-from typing import List, Optional
-
+import datetime
 import jwt
-from fastapi import APIRouter, Body, Query, Security
-from fastapi.security import HTTPBasic, HTTPBasicCredentials, HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import APIRouter, Body, Query, Security, Depends, HTTPException
+from fastapi.security import HTTPBasicCredentials, HTTPBasic, HTTPAuthorizationCredentials, HTTPBearer
 from starlette import status
-from starlette.requests import Request
 from starlette.responses import Response
-
 from project.schemas import DataResponse
 from router.examples.user import user_op1
-from schema import UserReq
+from schema import UserReq, Token, RoleReq
 from service.permisstion.user import UserService
 
 router = APIRouter()
 
 
-@router.post(path="/",
+@router.post(path="/sign_in",
              response_model=DataResponse,
              status_code=status.HTTP_201_CREATED)
-def insert_user(user: UserReq):
-    user = UserService().insert_user_service(UserReq(
+def sign_up(user: UserReq):
+    user = UserService().sign_up_service(UserReq(
         created_at=user.created_at,
         created_by=user.created_by,
         updated_at=user.updated_at,
@@ -29,12 +26,28 @@ def insert_user(user: UserReq):
         username=user.username,
         password=user.password,
         firstname=user.firstname,
-        lastname=user.lastname))
+        lastname=user.lastname,
+        role=RoleReq(
+            code=user.role.code,
+            name=user.role.name
+        )))
     return DataResponse(data=user)
 
 
+@router.post(path="/sign_up",
+             status_code=status.HTTP_200_OK)
+def sign_in(username: str, password: str,
+            credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
+    user = UserService().sign_in_service(username, password)
+    token = credentials.credentials
+    token_content = jwt.decode(token,
+                               key=os.getenv('SECRET_KEY'),
+                               algorithms=os.getenv("ALGORITHM"))
+    return token_content
+
+
 @router.put(
-    path="/{id}",
+    path="/{username}",
     response_model=DataResponse,
     status_code=status.HTTP_200_OK
 )
@@ -60,17 +73,17 @@ def get_user(role_name: str = Query(None, example="ADMIN")):
 
 
 @router.get(
-    path="/{id}",
+    path="/{username}",
     status_code=status.HTTP_200_OK,
     response_model=DataResponse
 )
-def get_user_by_id(username: str = Query(..., example="vietanh")):
+def get_user_by_username(username: str = Query(..., example="vietanh")):
     user = UserService().get_user_by_username_repo(username)
     return DataResponse(data=user)
 
 
 @router.delete(
-    path="/{id}",
+    path="/{username}",
     status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_user(username: str):
@@ -79,23 +92,51 @@ def delete_user(username: str):
 
 
 @router.post(
-    path="/login",
-    status_code=status.HTTP_200_OK
+    path="/token",
+    status_code=status.HTTP_201_CREATED,
+    response_model=Token
 )
-async def login(credentials: HTTPBasicCredentials = Security(HTTPBasic())):
+async def login_for_access_token(
+        credentials: HTTPBasicCredentials = Security(HTTPBasic())) -> Token:
+    user = UserService().authenticate_user(credentials.username, credentials.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    user = UserService().check_password(str(credentials.username).encode('utf-8'))
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"})
+
+    role = UserService().get_role(credentials.username)
+    role_code = role['Role'].code
+    permissions = UserService().get_permisstion(role_code)
     payload = {
         "sub": credentials.username,
-        "exp": datetime.now().timestamp() + 60
+        "iat": datetime.datetime.now(),
+        "exp": datetime.datetime.now() + datetime.timedelta(hours=2, minutes=10),
+        "role": role['Role'].name,
+        "permission": permissions
     }
-    token = jwt.encode(payload=payload, key=os.getenv('SECRET_KEY'), algorithm=os.getenv('ALGORITHM'))
-    return token
+    token = jwt.encode(payload=payload,
+                       key=os.getenv('SECRET_KEY'),
+                       algorithm=os.getenv("ALGORITHM"))
+    return Token(access_token=token,
+                 token_type='Bearer')
 
 
 @router.post(
-    path="/sample-api"
+    path="/sample-api",
+    deprecated=True
 )
 async def required_token(credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
     scheme = credentials.scheme
     token = credentials.credentials
-    token_content = jwt.decode(token, key=os.getenv('SECRET_KEY'), algorithms=os.getenv('ALGORITHM'))
+    token_content = jwt.decode(token,
+                               key=os.getenv('SECRET_KEY'),
+                               algorithms=os.getenv("ALGORITHM"))
     return token_content

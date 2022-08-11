@@ -6,12 +6,16 @@ from fastapi import HTTPException, UploadFile
 from starlette import status
 
 from project.schemas import DataResponse, Sort, PageResponse
+from repo.category import CategoryRepo
 from repo.product import ProductRepo
 from schema import ProductReq, SkuReq
 
 
 class ProductServiceAd(ProductRepo):
     def insert_product_service(self, product: ProductReq):
+        category = CategoryRepo().get_category_by_id(product.category_id)
+        if category == None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
         product = ProductRepo().insert_product_repo(ProductReq(
             created_at=product.created_at,
             created_by=product.created_by,
@@ -39,6 +43,9 @@ class ProductServiceAd(ProductRepo):
         return product
 
     def update_product_service(self, product: ProductReq, product_id: int):
+        _product = ProductRepo().get_product_id(product_id=product_id)
+        if _product == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         product = ProductRepo().update_product_repo(product_id=product_id,
                                                     product=ProductReq(
                                                         created_at=product.created_at,
@@ -87,20 +94,24 @@ class ProductServiceAd(ProductRepo):
         current_page = page
         if page and size is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-        return PageResponse(data=products,
+        list_product = []
+        for product in products:
+            list_product.append(product['Product'])
+        return PageResponse(data=list_product,
                             total_items=total_items,
                             total_page=total_page,
                             current_page=current_page)
 
     def get_product_id_service(self, product_id: int):
         product = ProductRepo().get_product_id(product_id=product_id)
-        if product:
-            return product
-        else:
+        if product == None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
     def delete_product_service(self, product_id: int):
+        _product = ProductRepo().get_product_id(product_id)
+        if _product == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         product = ProductRepo().delete_product_repo(product_id=product_id)
         return product
 

@@ -27,7 +27,7 @@ class CustomerRepo():
                             province_code=customer.province_code,
                             district_code=customer.district_code,
                             ward_code=customer.ward_code,
-                            password=hashlib.sha256(str(customer.password).encode('utf-8')).hexdigest(),
+                            password=customer.password,
                             firstname=customer.firstname,
                             lastname=customer.lastname)
         session.add(customer)
@@ -46,7 +46,7 @@ class CustomerRepo():
                                        province_code=customer.province_code,
                                        district_code=customer.district_code,
                                        ward_code=customer.ward_code,
-                                       password=hashlib.sha256(str(customer.password).encode('utf-8')).hexdigest(),
+                                       password=customer.password,
                                        firstname=customer.firstname,
                                        lastname=customer.lastname
                                        ).where(Customer.username == username)

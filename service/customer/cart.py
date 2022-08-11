@@ -59,12 +59,19 @@ class CartItemService(CartItemRepo):
 
     def get_cart_items_service(self, username: str):
         cart_items = CartItemRepo().get_cart_items_repo(username=username)
+        if cart_items == []:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return cart_items
 
     def get_cart_item_by_id_service(self, id: int):
         cart = CartItemRepo().get_cart_item_by_id_repo(id=id)
+        if cart == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return cart
 
     def delete_cart_item_service(self, id: int):
+        _cart = CartItemRepo().get_cart_item_by_id_repo(id)
+        if _cart == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         cart = CartItemRepo().delete_cart_item_repo(id=id)
         return cart
