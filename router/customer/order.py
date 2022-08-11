@@ -50,7 +50,7 @@ def get_orders_cus(
         payment_method=payment_method,
         name_shipping=name_shipping,
         phone_shipping=phone_shipping,
-        address_shipping=address_shipping.lower(),
+        address_shipping=address_shipping,
         province_code_shipping=province_code_shipping,
         ward_code_shipping=ward_code_shipping,
         district_code_shipping=district_code_shipping,

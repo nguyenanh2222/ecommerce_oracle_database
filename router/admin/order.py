@@ -1,11 +1,9 @@
 from decimal import Decimal
 from fastapi.params import Query
 from starlette import status
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter,HTTPException
 from project.schemas import DataResponse, PageResponse, Sort
 from repo.order import OrderRepo
-from router.examples.order import order_op1
-from schema import OrderReq
 from service.admin.order import OrderServiceAd
 from status import EOrderStatus
 
@@ -60,9 +58,6 @@ def get_orders(customer_name: str = Query(None),
     status_code=status.HTTP_200_OK
 )
 def get_order_by_id(order_id: int) -> DataResponse:
-    _order = OrderRepo().get_order_by_id_repo(order_id=order_id)
-    if _order == None:
-        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
     order = OrderServiceAd().get_order_by_id_service(order_id=order_id)
     return DataResponse(data=order)
 

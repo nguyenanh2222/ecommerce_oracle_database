@@ -146,13 +146,27 @@ async def startup():
         item_price=200_000,
     ))
     engine.execute(insert(Order).values(status=EOrderStatus.CANCELLED,
-                                        customer_name='vietanh'))
-    engine.execute(insert(OrderItem).values(shipping_fee=15_000,
+                                        customer_name='vietanh',
+                                        price=Decimal(1500000),
+                                        discount=0.3,
+                                        shipping_fee_original=Decimal(14000),
+                                        shipping_fee_discount=0.2,
+                                        items_count=3,
+                                        payment_method="cod",
+                                        name_shipping="a",
+                                        phone_shipping="0334872134",
+                                        address_shipping="a",
+                                        customer_username="vietanh",
+                                        province_code_shipping="01",
+                                        ward_code_shipping="00001",
+                                        district_code_shipping="001",
+                                        ))
+    engine.execute(insert(OrderItem).values(shipping_fee=Decimal(15000),
                                             created_by="admin",
                                             updated_by="admin",
                                             order_id=1,
                                             sku_id=1,
-                                            item_price=300_000,
+                                            item_price=Decimal(300000),
                                             name="product_name+sku_color+sku_size",
                                             main_image=json.dumps([{"name": "bbi0.jpg"}]
                                                                   )))

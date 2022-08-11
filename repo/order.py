@@ -53,7 +53,6 @@ class OrderRepo():
         rs = session.execute(query).fetchall()
         return rs
 
-
     def get_order_by_id_repo(self, order_id: int) -> Row:
         session: Session = SessionLocal()
         query = session.query(Order).filter(Order.id == order_id)

@@ -1,7 +1,9 @@
+import math
 from datetime import datetime
 from decimal import Decimal
 from typing import List
 from fastapi import HTTPException
+from numpy import ceil
 from sqlalchemy.engine import Row
 from starlette import status
 from model import Order, OrderItem
@@ -48,7 +50,7 @@ class OrderServiceCus(OrderRepo):
         if customer == None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         if order.customer_username == None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         order_items = []
         for cart_item in cart_items:
             order_item = OrderItemRepo().get_order_item_by_sku_id(cart_item.sku_id)
@@ -124,7 +126,7 @@ class OrderServiceCus(OrderRepo):
                                                  page=page,
                                                  size=size
                                                  )
-        total_page = len(orders) / size
+        total_page = math.ceil(len(orders) / size)
         current_page = page
         total_items = len(orders)
 

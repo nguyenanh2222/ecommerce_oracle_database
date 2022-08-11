@@ -121,7 +121,7 @@ class ProductRepo:
     def get_product_id(self, product_id: int) -> Row:
         session: Session = SessionLocal()
         query = session.query(Product).filter(Product.id == product_id)
-        rs = session.execute(query).first()
+        rs = session.execute(query).fetchone()
         return rs
 
     def delete_product_repo(self, product_id: int):

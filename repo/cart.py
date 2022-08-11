@@ -68,9 +68,6 @@ class CartItemRepo():
 
     def get_cart_item_by_id_repo(self, id: int):
         session: Session = SessionLocal()
-        stmt = select(CartItem).where(CartItem.id == id)
-        session.execute(stmt)
-        session.commit()
         cart = session.get(CartItem, id)
         return cart
 

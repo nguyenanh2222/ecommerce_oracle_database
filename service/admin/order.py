@@ -1,3 +1,4 @@
+import math
 from decimal import Decimal
 import pandas as pd
 from fastapi import HTTPException
@@ -37,7 +38,7 @@ class OrderServiceAd(OrderRepo):
             sort_direction=sort_direction,
             page=page, size=size)
 
-        total_page = len(orders) / size
+        total_page = math.ceil(len(orders) / size)
         current_page = page
         total_item = len(orders)
         if page and size is None:
@@ -50,13 +51,18 @@ class OrderServiceAd(OrderRepo):
                             total_page=total_page,
                             current_page=current_page)
 
-    def get_order_by_id_service(self, order_id: int) -> DataResponse:
+    def get_order_by_id_service(self, order_id: int):
         order = OrderRepo().get_order_by_id_repo(order_id=order_id)
+        if order == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         order_item = OrderItemRepo().get_order_items(order_id=order_id)
         data = [order,
-                {'order_item': order_item}]
+                [order_item]]
         return data
 
     def change_order_status_service(self, order_id: int, next_status: EOrderStatus):
+        order = OrderRepo().get_order_by_id_repo(order_id=order_id)
+        if order == None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         order = OrderRepo().change_order_status_repo(order_id=order_id, next_status=next_status)
         return order

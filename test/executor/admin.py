@@ -1,8 +1,6 @@
-from datetime import date
 from decimal import Decimal
 from typing import Dict
 from starlette import status
-
 from test.client import client
 
 
@@ -136,3 +134,28 @@ class AdminAPIExecutor():
     def test_admin_get_order_not_found_id(self, id):
         res = client.get(f"http://127.0.0.1:8000/orders/{id}?order_id={id}")
         assert res.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_admin_put_change_status_successful(self, id, next_status):
+        res = client.put(f'http://127.0.0.1:8000/orders/change_status?order_id={id}&next_status={next_status}')
+        assert res.status_code == status.HTTP_200_OK
+
+    def test_admin_put_change_status_not_found_id(self, id, next_status):
+        res = client.put(f'http://127.0.0.1:8000/orders/change_status?order_id={id}&next_status={next_status}')
+        assert res.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_admin_post_upload_file_successful(self):
+        res = client.post('http://127.0.0.1:8000/files/',
+                          files={"file": open('/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/files/api.png', "rb")})
+        assert res.status_code == status.HTTP_200_OK
+
+    def test_admin_post_upload_file_value_error(self):
+        res = client.post('http://127.0.0.1:8000/files/',
+                          files={"file": open(
+                              '/home/minerva-backend/Desktop/repos/ecommerce_oracle_database/files/Untitled-1.odt', "rb")})
+        assert res.status_code == status.HTTP_400_BAD_REQUEST
+
+
+
+
+
+

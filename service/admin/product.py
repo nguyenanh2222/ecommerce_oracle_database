@@ -104,9 +104,7 @@ class ProductServiceAd(ProductRepo):
 
     def get_product_id_service(self, product_id: int):
         product = ProductRepo().get_product_id(product_id=product_id)
-        if product:
-            return product
-        else:
+        if product == None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 

@@ -1,13 +1,6 @@
-import datetime
-from datetime import date
 from decimal import Decimal
-from itertools import product
-
-from sqlalchemy.orm import Session
-from starlette import status
-
-from test.client import client
 from test.executor.admin import AdminAPIExecutor
+from status import EOrderStatus
 
 
 class TestSimpleCaseAdmin:
@@ -118,9 +111,7 @@ class TestSimpleCaseAdmin:
             }
         )
 
-    def test_admin_delete_product(self):
-        self.executor_admin.test_admin_delete_product_successful(1)
-        self.executor_admin.test_admin_delete_product_not_found_id(100)
+
 
     def test_admin_get_product_by_id(self):
         self.executor_admin.test_admin_get_product_by_id_successful(1)
@@ -208,7 +199,16 @@ class TestSimpleCaseAdmin:
 
     def test_admin_get_order_by_id(self):
         self.executor_admin.test_admin_get_order_by_id_successful(1)
-        # self.executor_admin.test_admin_get_order_not_found_id(100)
+        self.executor_admin.test_admin_get_order_not_found_id(100)
+
+    def test_admin_put_change_status(self):
+        self.executor_admin.test_admin_put_change_status_successful(1, EOrderStatus.SHIPPING)
+        self.executor_admin.test_admin_put_change_status_not_found_id(100, EOrderStatus.COMPLETED)
 
     def test_admin_create_upload_file(self):
-        ...
+        self.executor_admin.test_admin_post_upload_file_successful()
+        self.executor_admin.test_admin_post_upload_file_value_error()
+
+    def test_admin_delete_product(self):
+        self.executor_admin.test_admin_delete_product_successful(1)
+        self.executor_admin.test_admin_delete_product_not_found_id(100)

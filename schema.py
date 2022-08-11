@@ -1,7 +1,11 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import List
-from pydantic import BaseModel, Field
+
+import pandas as pd
+from pydantic import BaseModel, Field, validator
+from starlette import status
+from starlette.exceptions import HTTPException
 
 
 class BaseUtil(BaseModel):
@@ -32,6 +36,26 @@ class CustomerReq(BaseUtil):
     firstname: str = Field(...)
     lastname: str = Field(...)
 
+    @validator('password')
+    def check_password(cls, v):
+        special_syms = ['$', '@', '#', '%']
+        if len(v) < 6 and len(v) > 20:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        if not any(char.isdigit() for char in v):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        if not any(char.isupper() for char in v):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        if not any(char.islower() for char in v):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        point = True
+        for char in v:
+            if char in special_syms:
+                point = False
+                break
+        if point:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        return v
+
 
 class CustomerRes(BaseModel):
     username: str = Field(None)
@@ -50,7 +74,7 @@ class CartItemReq(BaseUtil):
     sku_id: int = Field(...)
     # name: str = Field(...)
     main_image: str = Field(...)
-    item_price: Decimal = Field(...)
+    item_price: Decimal = Field(..., gt=0)
     username: str = Field(...)
 
 
@@ -60,7 +84,7 @@ class CartItemRes(BaseUtil):
     sku_id: int = Field(None)
     name: str = Field(None)
     main_image: str = Field(None)
-    item_price: Decimal = Field(None)
+    item_price: Decimal = Field(None, gt=0)
 
 
 class CategoryReq(BaseModel):
@@ -81,7 +105,7 @@ class SkuReq(BaseModel):
     package_width: int = Field(...)
     package_height: int = Field(...)
     package_length: int = Field(...)
-    price: Decimal = Field(...)
+    price: Decimal = Field(..., gt=0)
     size_product: str = Field(...)
 
 
@@ -101,7 +125,7 @@ class ProductRes(BaseModel):
     quantity: int = Field(None)
     images: bytes = Field(None)
     color: str = Field(None)
-    price: Decimal = Field(None)
+    price: Decimal = Field(None, gt=0)
     size_product: str = Field(None)
 
 
@@ -115,7 +139,7 @@ class SkuRes(BaseUtil):
     package_height: int = Field(None)
     package_length: int = Field(None)
     package_weight: int = Field(None)
-    price: Decimal = Field(None)
+    price: Decimal = Field(None, gt=0)
     product_id: int = Field(None)
     size: str = Field(None)
 
@@ -126,8 +150,8 @@ class OrderItemReq(BaseUtil):
     sku_id: int = Field(...)
     name: str = Field(...)
     main_image: bytes = Field(...)
-    item_price: Decimal = Field(...)
-    paid_price: Decimal = Field(...)
+    item_price: Decimal = Field(...,gt=0)
+    paid_price: Decimal = Field(..., gt=0)
 
 
 class OrderReq(BaseUtil):
@@ -141,7 +165,7 @@ class OrderReq(BaseUtil):
 class OrderRes(BaseUtil):
     id: int = Field(None)
     customer_name: str = Field(None)
-    price: Decimal = Field(None)
+    price: Decimal = Field(None, gt=0)
     shipping_fee_original: Decimal = Field(None)
     payment_method: str = Field(None)
     shipping_fee_discount: Decimal = Field(None)
@@ -161,8 +185,8 @@ class OrderItemRes(BaseUtil):
     sku_id: int = Field(None)
     name: str = Field(None)
     main_image: str = Field(None)
-    item_price: Decimal = Field(None)
-    paid_price: Decimal = Field(None)
+    item_price: Decimal = Field(None, gt=0)
+    paid_price: Decimal = Field(None, gt=0)
     shipping_fee: Decimal = Field(None)
 
 
@@ -229,4 +253,3 @@ class UserRes(BaseUtilRes):
     firstname: str = Field(None)
     lastname: str = Field(None)
     role_name: str = Field(None)
-

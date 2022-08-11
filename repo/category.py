@@ -13,6 +13,7 @@ class CategoryRepo():
 
     def get_category_by_id(self, id):
         session: Session = SessionLocal()
-        query = session.query(Category).filter(Category.id == id)
+        query = session.query(Category).filter(
+            Category.id == id)
         rs = session.execute(query).fetchone()
         return rs
