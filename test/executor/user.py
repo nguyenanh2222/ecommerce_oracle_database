@@ -23,5 +23,6 @@ class UserAPIExecutor():
     def test_delete_user(self):
         ...
 
-    def test_login_for_access_token(self):
-        ...
+    def test_login_for_access_token(self, username, password):
+        data = {"username": "ANH", "password": "" }
+        res = client.post("http://127.0.0.1:8000/users/token", )
