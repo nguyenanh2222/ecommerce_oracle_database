@@ -36,14 +36,11 @@ def sign_up(user: UserReq):
 
 @router.post(path="/sign_up",
              status_code=status.HTTP_200_OK)
-def sign_in(username: str, password: str,
-            credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
-    user = UserService().sign_in_service(username, password)
-    token = credentials.credentials
-    token_content = jwt.decode(token,
-                               key=os.getenv('SECRET_KEY'),
-                               algorithms=os.getenv("ALGORITHM"))
-    return token_content
+def sign_in(
+        credentials: HTTPBasicCredentials = Security(HTTPBasic())
+):
+    token = UserService().sign_in_service(credentials.username, credentials.password)
+    return {"access_token": token}
 
 
 @router.put(
@@ -91,42 +88,42 @@ def delete_user(username: str):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post(
-    path="/token",
-    status_code=status.HTTP_201_CREATED,
-    response_model=Token
-)
-async def login_for_access_token(
-        credentials: HTTPBasicCredentials = Security(HTTPBasic())) -> Token:
-    user = UserService().authenticate_user(credentials.username, credentials.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    user = UserService().check_password(str(credentials.username).encode('utf-8'))
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"})
-
-    role = UserService().get_role(credentials.username)
-    role_code = role['Role'].code
-    permissions = UserService().get_permisstion(role_code)
-    payload = {
-        "sub": credentials.username,
-        "iat": datetime.datetime.now(),
-        "exp": datetime.datetime.now() + datetime.timedelta(hours=2, minutes=10),
-        "role": role['Role'].name,
-        "permission": permissions
-    }
-    token = jwt.encode(payload=payload,
-                       key=os.getenv('SECRET_KEY'),
-                       algorithm=os.getenv("ALGORITHM"))
-    return Token(access_token=token,
-                 token_type='Bearer')
+# @router.post(
+#     path="/token",
+#     status_code=status.HTTP_201_CREATED,
+#     response_model=Token
+# )
+# async def login_for_access_token(
+#         credentials: HTTPBasicCredentials = Security(HTTPBasic())) -> Token:
+#     user = UserService().authenticate_user(credentials.username, credentials.password)
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Incorrect username or password",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+#     user = UserService().check_password(str(credentials.username).encode('utf-8'))
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Incorrect username or password",
+#             headers={"WWW-Authenticate": "Bearer"})
+#
+#     role = UserService().get_role(credentials.username)
+#     role_code = role['Role'].code
+#     permissions = UserService().get_permisstion(role_code)
+#     payload = {
+#         "sub": credentials.username,
+#         "iat": datetime.datetime.now(),
+#         "exp": datetime.datetime.now() + datetime.timedelta(hours=2, minutes=10),
+#         "role": role['Role'].name,
+#         "permission": permissions
+#     }
+#     token = jwt.encode(payload=payload,
+#                        key=os.getenv('SECRET_KEY'),
+#                        algorithm=os.getenv("ALGORITHM"))
+#     return Token(access_token=token,
+#                  token_type='Bearer')
 
 
 @router.post(

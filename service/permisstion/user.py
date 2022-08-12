@@ -1,5 +1,9 @@
+import datetime
+import hashlib
+import math
 import os
 import uuid
+import random
 
 import bcrypt
 import jwt
@@ -53,7 +57,7 @@ class UserService(UserRepo):
     def delete_user_service(self, username: str):
         user = UserRepo().delete_user_repo(username=username)
 
-    def authenticate_user(self,  username: str, password: str):
+    def authenticate_user(self, username: str, password: str):
         user = UserRepo().get_user_by_username_repo(username)
         if not user:
             return False
@@ -65,15 +69,18 @@ class UserService(UserRepo):
         user = UserRepo().get_user_by_username_repo(username)
         return user
 
-    def get_hashed_password(self, plain_text_password):
-        return bcrypt.hashpw(str(plain_text_password).encode('utf-8'), bcrypt.gensalt())
+    def get_hashed_password(self, plain_text_password, salt: bytes):
+        hashed_pass = hashlib.md5(plain_text_password.encode("utf8") + salt).hexdigest()
+        return hashed_pass
+        # return bcrypt.hashpw(str(plain_text_password).encode('utf-8'), bcrypt.gensalt())
 
     def check_password(self, plain_text_password):
         hashed_password = self.get_hashed_password(plain_text_password)
         return bcrypt.checkpw(password=str(plain_text_password).encode('utf-8'), hashed_password=hashed_password)
 
     def sign_up_service(self, user: UserReq):
-        password = self.get_hashed_password(user.password)        # confirm password
+        salt = str(random.randint(0, 99)).encode("utf8")
+        password = self.get_hashed_password(user.password, salt)  # confirm password
         user = UserReq(
             created_at=user.created_at,
             created_by=user.created_by,
@@ -86,18 +93,31 @@ class UserService(UserRepo):
                 code=user.role.code,
                 name=user.role.name
             ))
-        user = UserRepo().insert_user_repo(user=user)
+        user = UserRepo().insert_user_repo(user=user, salt=salt)
         return user
 
-    def sign_in_service(self, username: str, password: str):
+    def sign_in_service(self, username: str, password: str) -> str:
         user_db = UserRepo().get_user_by_username_repo(username)
-        if user_db != None:
-            if self.check_password(password.encode('utf-8')):
-                return username, password
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
+        if user_db is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
+        hashed_pass = hashlib.md5(password.encode("utf8") + user_db.salt).hexdigest()
+
+        if hashed_pass != user_db.password:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+        return self.generate_token(username)
+
+    def generate_token(self, username) -> str:
+        payload = {
+            "sub": username,
+            "iat": datetime.datetime.now(),
+            "exp": datetime.datetime.now() + datetime.timedelta(hours=2, minutes=10),
+        }
+        return jwt.encode(payload=payload,
+                          key=os.getenv('SECRET_KEY'),
+                          algorithm=os.getenv("ALGORITHM"))
 
     def get_roles(self):
         roles = UserRepo().get_roles()
