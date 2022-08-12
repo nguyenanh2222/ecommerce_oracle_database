@@ -150,7 +150,7 @@ class OrderItemReq(BaseUtil):
     sku_id: int = Field(...)
     name: str = Field(...)
     main_image: bytes = Field(...)
-    item_price: Decimal = Field(...,gt=0)
+    item_price: Decimal = Field(..., gt=0)
     paid_price: Decimal = Field(..., gt=0)
 
 
@@ -244,7 +244,7 @@ class UserReq(BaseUtil):
     password: str = Field(...)
     firstname: str = Field(...)
     lastname: str = Field(...)
-    role: RoleReq = Field(...)
+    role: RoleReq = Field(None)
 
 
 class UserRes(BaseUtilRes):

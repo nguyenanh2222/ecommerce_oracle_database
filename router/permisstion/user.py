@@ -1,9 +1,11 @@
-import os
-from datetime import datetime
+import base64
 import datetime
+import os
+
 import jwt
-from fastapi import APIRouter, Body, Query, Security, Depends, HTTPException
+from fastapi import APIRouter, Body, Query, Security, HTTPException
 from fastapi.security import HTTPBasicCredentials, HTTPBasic, HTTPAuthorizationCredentials, HTTPBearer
+from starlette.requests import Request
 from starlette import status
 from starlette.responses import Response
 from project.schemas import DataResponse
@@ -14,7 +16,7 @@ from service.permisstion.user import UserService
 router = APIRouter()
 
 
-@router.post(path="/sign_in",
+@router.post(path="/sign-up",
              response_model=DataResponse,
              status_code=status.HTTP_201_CREATED)
 def sign_up(user: UserReq):
@@ -27,23 +29,20 @@ def sign_up(user: UserReq):
         password=user.password,
         firstname=user.firstname,
         lastname=user.lastname,
-        role=RoleReq(
-            code=user.role.code,
-            name=user.role.name
-        )))
+    ))
     return DataResponse(data=user)
 
 
-@router.post(path="/sign_up",
+@router.post(path="/sign-in",
              status_code=status.HTTP_200_OK)
-def sign_in(username: str, password: str,
-            credentials: HTTPAuthorizationCredentials = Security(HTTPBearer())):
-    user = UserService().sign_in_service(username, password)
-    token = credentials.credentials
-    token_content = jwt.decode(token,
-                               key=os.getenv('SECRET_KEY'),
-                               algorithms=os.getenv("ALGORITHM"))
-    return token_content
+def sign_in(
+        request: Request
+):
+    auth = request.headers.get("Authorization")
+    s = auth[6:]
+    username, password = base64.b64decode(s).decode("ascii").split(":")
+    token = UserService().sign_in(username, password)
+    return {"access_token": token}
 
 
 @router.put(

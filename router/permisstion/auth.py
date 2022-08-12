@@ -62,5 +62,8 @@ class AuthenticationMiddlewareExtended(AuthenticationMiddleware):
                 raise AuthenticationError("token invalid")
 
 
+
+
+
 def default_on_error(conn: HTTPConnection, exc: Exception) -> Response:
     return PlainTextResponse(str(exc), status_code=401)

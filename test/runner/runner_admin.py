@@ -1,4 +1,6 @@
 from decimal import Decimal
+
+from test.client import client
 from test.executor.admin import AdminAPIExecutor
 from status import EOrderStatus
 
@@ -111,38 +113,36 @@ class TestSimpleCaseAdmin:
             }
         )
 
-
-
     def test_admin_get_product_by_id(self):
         self.executor_admin.test_admin_get_product_by_id_successful(1)
         self.executor_admin.test_admin_get_product_not_found_id(100)
 
     def test_admin_update_product(self):
         self.executor_admin.test_admin_update_product_by_id_successful(1,
-                                                                       {
-                                                                           "created_at": "2022-08-01T02:36:00.817Z",
-                                                                           "created_by": "admin",
-                                                                           "updated_at": "2022-08-01T02:36:00.817Z",
-                                                                           "updated_by": "admin",
-                                                                           "name": "AZ123",
-                                                                           "description": "summer",
-                                                                           "brand": "no brand",
-                                                                           "category_id": 1,
-                                                                           "skus": [
-                                                                               {
-                                                                                   "status": "COMPLETED",
-                                                                                   "quantity": 1,
-                                                                                   "images": "abc",
-                                                                                   "seller_sku": "123456",
-                                                                                   "color": "black",
-                                                                                   "package_width": 15,
-                                                                                   "package_height": 15,
-                                                                                   "package_length": 15,
-                                                                                   "price": 156000,
-                                                                                   "size_product": "150"
-                                                                               }
-                                                                           ]
-                                                                       })
+
+                                                                       {"created_at": "2022-08-01T02:36:00.817Z",
+                                                                        "created_by": "admin",
+                                                                        "updated_at": "2022-08-01T02:36:00.817Z",
+                                                                        "updated_by": "admin",
+                                                                        "name": "AZ123",
+                                                                        "description": "summer",
+                                                                        "brand": "no brand",
+                                                                        "category_id": 1,
+                                                                        "skus": [
+                                                                            {
+                                                                                "status": "COMPLETED",
+                                                                                "quantity": 1,
+                                                                                "images": "abc",
+                                                                                "seller_sku": "123456",
+                                                                                "color": "black",
+                                                                                "package_width": 15,
+                                                                                "package_height": 15,
+                                                                                "package_length": 15,
+                                                                                "price": 156000,
+                                                                                "size_product": "150"
+                                                                            }
+                                                                        ]
+                                                                        })
         self.executor_admin.test_admin_update_product_not_found_id(100,
                                                                    {"created_at": "2022-08-01T02:36:00.817Z",
                                                                     "created_by": "admin",

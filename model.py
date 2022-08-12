@@ -63,6 +63,7 @@ class User(BaseUtil):
     password = Column(VARCHAR2(200))
     firstname = Column(VARCHAR2(200))
     lastname = Column(VARCHAR2(200))
+    salt = Column(BLOB)
 
 
 class Customer(BaseUtil):

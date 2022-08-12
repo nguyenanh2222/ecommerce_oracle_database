@@ -3,11 +3,14 @@ from decimal import Decimal
 from enum import Enum
 from hashlib import sha256
 from fastapi import FastAPI
+from fastapi.params import Query, Header
 from fastapi.responses import ORJSONResponse
 from loguru import logger
 from py import process
 from sqlalchemy import create_engine, insert
 from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+
 from database import username, password, host, port, database
 from model import *
 from router.permisstion.auth import AuthenticationMiddlewareExtended
@@ -185,3 +188,10 @@ async def teardown():
     metadata = Base.metadata
     metadata.drop_all(bind=engine1)
     logger.info("APP TEAR DOWN COMPLETED")
+
+
+@app.get(
+    path="test"
+)
+def test():
+    ...
